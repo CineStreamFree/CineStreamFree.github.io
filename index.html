@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineStream — Películas Online Gratis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0f;--surface:#111118;--card:#16161f;--border:#1f1f2e;
+      --accent:#e63946;--accent2:#ff6b6b;--gold:#ffd166;
+      --white:#f0eff4;--muted:#6b6b85;--text:#c8c7d4;--r:14px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 0%,rgba(230,57,70,.12) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 90% 100%,rgba(255,107,107,.07) 0%,transparent 55%);pointer-events:none;z-index:0}
+
+    nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 clamp(16px,5vw,60px);height:64px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--white);text-decoration:none}
+    .nav-logo span{color:var(--accent)}
+    .nav-info{font-size:12px;color:var(--muted);letter-spacing:.5px}
+    .nav-info strong{color:var(--gold)}
+
+    .hero{position:relative;z-index:1;padding:clamp(48px,10vw,100px) clamp(16px,5vw,60px) clamp(40px,8vw,80px);text-align:center}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.3);border-radius:100px;padding:6px 18px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:24px;animation:fadeUp .6s ease both}
+    .hero-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 1.4s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,12vw,110px);line-height:.9;letter-spacing:2px;color:var(--white);animation:fadeUp .6s .1s ease both}
+    .hero h1 em{font-style:italic;color:var(--accent);font-family:'DM Serif Display',serif}
+    .hero p{margin-top:20px;font-size:clamp(14px,2vw,17px);color:var(--muted);max-width:480px;margin-inline:auto;line-height:1.6;animation:fadeUp .6s .2s ease both}
+    .hero-stats{display:flex;justify-content:center;gap:40px;margin-top:36px;animation:fadeUp .6s .3s ease both}
+    .stat{text-align:center}
+    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--white)}
+    .stat-num span{color:var(--accent)}
+    .stat-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .search-wrap{position:relative;z-index:1;padding:0 clamp(16px,5vw,60px) 40px;max-width:600px;margin:0 auto;animation:fadeUp .6s .35s ease both}
+    .search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:14px 24px 14px 52px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+    .search-wrap input::placeholder{color:var(--muted)}
+    .search-wrap input:focus{border-color:var(--accent)}
+    .search-icon{position:absolute;left:36px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;pointer-events:none}
+
+    .filters{position:relative;z-index:1;padding:0 clamp(16px,5vw,60px) 36px;display:flex;gap:10px;flex-wrap:wrap;animation:fadeUp .6s .4s ease both}
+    .filter-btn{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 18px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s}
+    .filter-btn:hover,.filter-btn.active{background:var(--accent);border-color:var(--accent);color:var(--white)}
+
+    .section{position:relative;z-index:1;padding:0 clamp(16px,5vw,60px) 80px}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--white);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+    .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent)}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease,border-color .3s;animation:fadeUp .5s ease both}
+    .card:hover{transform:translateY(-6px) scale(1.02);border-color:rgba(230,57,70,.4);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(230,57,70,.2)}
+    .card-thumb{position:relative;aspect-ratio:2/3;background:var(--surface);overflow:hidden}
+    .card-thumb-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,#16161f 0%,#1f1f30 100%)}
+    .card-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,15,.95) 0%,rgba(10,10,15,.2) 50%,transparent 100%);opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+    .card:hover .card-thumb-overlay{opacity:1}
+    .play-btn{width:54px;height:54px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transform:scale(.7);transition:transform .3s;box-shadow:0 0 30px rgba(230,57,70,.5)}
+    .card:hover .play-btn{transform:scale(1)}
+    .card-badge{position:absolute;top:10px;left:10px;background:var(--accent);color:var(--white);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+    .card-badge.hd{background:#06d6a0}
+    .card-badge.hdts{background:#ffd166;color:#111}
+    .card-badge.new{background:linear-gradient(135deg,#e63946,#ff6b6b);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,57,70,.4)}50%{box-shadow:0 0 0 6px rgba(230,57,70,0)}}
+    .card-year{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.7);color:var(--muted);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px}
+    .card-body{padding:14px}
+    .card-title{font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;line-height:1.3;color:var(--white);margin-bottom:6px}
+    .card-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+    .card-meta .dot{color:var(--border)}
+    .card-size{margin-left:auto;font-size:10px;color:var(--muted);background:var(--surface);padding:2px 7px;border-radius:4px}
+
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px)}
+    .modal-bg.open{display:flex}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:860px;overflow:hidden;animation:modalIn .3s ease;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+    @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+    .modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--white)}
+    .modal-close{background:var(--surface);border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .modal-close:hover{background:var(--accent);color:var(--white);border-color:var(--accent)}
+    .modal-player{position:relative;width:100%;padding-top:56.25%;background:#000}
+    .modal-player iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+    .modal-info{padding:16px 24px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .modal-chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--muted)}
+
+    footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:32px clamp(16px,5vw,60px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--muted)}
+    .footer-logo span{color:var(--accent)}
+    footer p{font-size:11px;color:var(--muted)}
+    .card.hidden{display:none}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    @media(max-width:500px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}.hero-stats{gap:24px}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Cine<span>Stream</span></a>
+  <span class="nav-info"><strong>18</strong> películas disponibles · Gratis</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">🎬 Streaming Gratuito</div>
+  <h1>Tu Cine,<br/><em>Sin Límites</em></h1>
+  <p>Las mejores películas en HD directo desde Google Drive. Sin registros, sin pagos, sin esperas.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">18<span>+</span></div><div class="stat-label">Películas</div></div>
+    <div class="stat"><div class="stat-num">1080<span>p</span></div><div class="stat-label">Calidad HD</div></div>
+    <div class="stat"><div class="stat-num">100<span>%</span></div><div class="stat-label">Gratis</div></div>
+  </div>
+</section>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input type="text" id="searchInput" placeholder="Buscar película..." oninput="filterMovies()"/>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setFilter('all',this)">Todas</button>
+  <button class="filter-btn" onclick="setFilter('2025',this)">2025</button>
+  <button class="filter-btn" onclick="setFilter('2024',this)">2024</button>
+  <button class="filter-btn" onclick="setFilter('accion',this)">Acción</button>
+  <button class="filter-btn" onclick="setFilter('terror',this)">Terror</button>
+  <button class="filter-btn" onclick="setFilter('animacion',this)">Animación</button>
+  <button class="filter-btn" onclick="setFilter('drama',this)">Drama</button>
+</div>
+
+<section class="section">
+  <div class="section-title">🎥 Catálogo Completo</div>
+  <div class="grid" id="movieGrid">
+
+    <div class="card" onclick="openModal(0)" data-year="2025" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">🦅</div><div class="card-badge new">NUEVO</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Capitán América: Un Nuevo Mundo</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">3.8GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(1)" data-year="2025" data-genre="terror">
+      <div class="card-thumb"><div class="card-thumb-bg">🌊</div><div class="card-badge hd">HD</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Abismo Secreto</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">4.2GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(2)" data-year="2025" data-genre="drama">
+      <div class="card-thumb"><div class="card-thumb-bg">🎭</div><div class="card-badge hd">HD</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Emilia Pérez</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">2.4GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(3)" data-year="2024" data-genre="drama">
+      <div class="card-thumb"><div class="card-thumb-bg">⚔️</div><div class="card-badge hd">HD</div><div class="card-year">2024</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Conde de Montecristo</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">3.1GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(4)" data-year="2015" data-genre="terror">
+      <div class="card-thumb"><div class="card-thumb-bg">🌑</div><div class="card-badge hd">HD</div><div class="card-year">2015</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Lado Oscuro del Deseo</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">4.3GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(5)" data-year="2025" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">💥</div><div class="card-badge new">NUEVO</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">De Vuelta a la Acción</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">2.6GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(6)" data-year="2025" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">🐆</div><div class="card-badge new">NUEVO</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Robo Perfecto: Pantera</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">3.7GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(7)" data-year="2025" data-genre="terror">
+      <div class="card-thumb"><div class="card-thumb-bg">🐺</div><div class="card-badge new">NUEVO</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Wolf Man</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">3.6GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(8)" data-year="2024" data-genre="terror">
+      <div class="card-thumb"><div class="card-thumb-bg">🧛</div><div class="card-badge hd">HD</div><div class="card-year">2024</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Nosferatu</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">2.1GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(9)" data-year="2018" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">🎮</div><div class="card-badge hd">HD</div><div class="card-year">2018</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Ready Player One</div><div class="card-meta">1080p <span class="dot">·</span> Latino <span class="card-size">3.4GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(10)" data-year="2024" data-genre="animacion">
+      <div class="card-thumb"><div class="card-thumb-bg">🦁</div><div class="card-badge hdts">HDTS</div><div class="card-year">2024</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Mufasa: El Rey León</div><div class="card-meta">HDTS <span class="dot">·</span> Latino <span class="card-size">3.6GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(11)" data-year="2024" data-genre="animacion">
+      <div class="card-thumb"><div class="card-thumb-bg">🌺</div><div class="card-badge hdts">HDTS</div><div class="card-year">2024</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Moana 2</div><div class="card-meta">HDTS <span class="dot">·</span> Latino <span class="card-size">3.5GB</span></div></div>
+    </div>
+
+    <div class="card" onclick="openModal(12)" data-year="2024" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">🕷️</div><div class="card-badge hdts">HDTS</div><div class="card-year">2024</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Venom 3: El Último Baile</div><div class="card-meta">HDTS <span class="dot">·</span> Latino</div></div>
+    </div>
+
+    <div class="card" onclick="openModal(13)" data-year="2015" data-genre="drama">
+      <div class="card-thumb"><div class="card-thumb-bg">🐻</div><div class="card-badge hd">HD</div><div class="card-year">2015</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Renacido (The Revenant)</div><div class="card-meta">1080p <span class="dot">·</span> Latino</div></div>
+    </div>
+
+    <div class="card" onclick="openModal(14)" data-year="2023" data-genre="animacion">
+      <div class="card-thumb"><div class="card-thumb-bg">🌿</div><div class="card-badge hd">HD</div><div class="card-year">2023</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Mavka: Guardiana del Bosque</div><div class="card-meta">1080p <span class="dot">·</span> Latino</div></div>
+    </div>
+
+    <div class="card" onclick="openModal(15)" data-year="2017" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">⚙️</div><div class="card-badge hd">HD</div><div class="card-year">2017</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Máquina de Guerra</div><div class="card-meta">1080p <span class="dot">·</span> Latino</div></div>
+    </div>
+
+    <div class="card" onclick="openModal(16)" data-year="2022" data-genre="animacion">
+      <div class="card-thumb"><div class="card-thumb-bg">🦕</div><div class="card-badge hd">HD</div><div class="card-year">2022</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">El Monstruo Marino</div><div class="card-meta">1080p <span class="dot">·</span> Latino</div></div>
+    </div>
+
+    <div class="card" onclick="openModal(17)" data-year="2025" data-genre="accion">
+      <div class="card-thumb"><div class="card-thumb-bg">🌋</div><div class="card-badge new">NUEVO</div><div class="card-year">2025</div><div class="card-thumb-overlay"><div class="play-btn">▶</div></div></div>
+      <div class="card-body"><div class="card-title">Avatar: Fuego y Ceniza</div><div class="card-meta">1080p <span class="dot">·</span> Latino</div></div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Cine<span>Stream</span></div>
+  <p>Solo para uso personal · Contenido de terceros · © 2025</p>
+</footer>
+
+<div class="modal-bg" id="modalBg" onclick="closeModalBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">—</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-player">
+      <iframe id="modalFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    </div>
+    <div class="modal-info" id="modalInfo"></div>
+  </div>
+</div>
+
+<script>
+const movies=[
+  {title:"Capitán América: Un Nuevo Mundo",year:2025,quality:"1080p",size:"3.8GB",genre:"Acción",src:"https://drive.google.com/file/d/15RCWEOW_bzgrgWrX2RwKAj_0Re2Cbzkt/preview"},
+  {title:"El Abismo Secreto",year:2025,quality:"1080p",size:"4.2GB",genre:"Terror",src:"https://drive.google.com/file/d/14qaUUtOynmdd1nmW7vAN5RPFFRRaxHEL/preview"},
+  {title:"Emilia Pérez",year:2025,quality:"1080p",size:"2.4GB",genre:"Drama",src:"https://drive.google.com/file/d/1AgKQyfZQw1AR2TQXzxI8kQACXC3KkGBa/preview"},
+  {title:"El Conde de Montecristo",year:2024,quality:"1080p",size:"3.1GB",genre:"Drama",src:"https://drive.google.com/file/d/1Hf0vGvYHc8LsM6AG2KTGFVgmGYSpMISh/preview"},
+  {title:"El Lado Oscuro del Deseo",year:2015,quality:"1080p",size:"4.3GB",genre:"Suspenso",src:"https://drive.google.com/file/d/12RKnUBNqg9_K1WXJO_gHh3ZCVY9W6z8f/preview"},
+  {title:"De Vuelta a la Acción",year:2025,quality:"1080p",size:"2.6GB",genre:"Acción / Comedia",src:"https://drive.google.com/file/d/18vfd9ep7tCdMKmn4-0k561AfoNUuvMDu/preview"},
+  {title:"El Robo Perfecto: Pantera",year:2025,quality:"1080p",size:"3.7GB",genre:"Acción",src:"https://drive.google.com/file/d/11PSUk9ONJdZBs2sGYNE0E6ljZLTqVqem/preview"},
+  {title:"Wolf Man",year:2025,quality:"1080p",size:"3.6GB",genre:"Terror",src:"https://drive.google.com/file/d/1JNfka3tnHx2G-wKiAplE0JPLOTeB5iE8/preview"},
+  {title:"Nosferatu",year:2024,quality:"1080p",size:"2.1GB",genre:"Terror",src:"https://drive.google.com/file/d/125V3X7VwTph9J2Vlqh8ena4sfY9KIALk/preview"},
+  {title:"Ready Player One",year:2018,quality:"1080p",size:"3.4GB",genre:"Acción / Sci-Fi",src:"https://drive.google.com/file/d/1uUpKLBt6oqwOyDOD3nboCCn8jvkDUIsw/preview"},
+  {title:"Mufasa: El Rey León",year:2024,quality:"HDTS",size:"3.6GB",genre:"Animación",src:"https://drive.google.com/file/d/1pdkjGChnEKg3L_XkcjOpotoJyyfxpHJn/preview"},
+  {title:"Moana 2",year:2024,quality:"HDTS",size:"3.5GB",genre:"Animación",src:"https://drive.google.com/file/d/1tAHer78x-q_YRVtDtThPoH7IDXR4K27f/preview"},
+  {title:"Venom 3: El Último Baile",year:2024,quality:"HDTS",size:"—",genre:"Acción",src:"https://drive.google.com/file/d/1SkNe7pUtlQu94obbBjc_jHmmaU0EnFui/preview"},
+  {title:"El Renacido (The Revenant)",year:2015,quality:"1080p",size:"—",genre:"Drama / Aventura",src:"https://drive.google.com/file/d/1Iui2BZZbWxg0y_JGK-t6TMeAsV7HGleg/preview"},
+  {title:"Mavka: Guardiana del Bosque",year:2023,quality:"1080p",size:"—",genre:"Animación",src:"https://drive.google.com/file/d/1Y5WcVRMUWiITXFKSlp5S3TlLSWBtrwmS/preview"},
+  {title:"Máquina de Guerra",year:2017,quality:"1080p",size:"—",genre:"Drama / Bélico",src:"https://drive.google.com/file/d/1oqKAtDPxgus2OAoAlbAUzdl33w8F6Td2/preview"},
+  {title:"El Monstruo Marino",year:2022,quality:"1080p",size:"—",genre:"Animación / Aventura",src:"https://drive.google.com/file/d/1rWSbqdb3j-DnCIi70e-mAX3ikm99xugB/preview"},
+  {title:"Avatar: Fuego y Ceniza",year:2025,quality:"1080p",size:"—",genre:"Acción / Sci-Fi",src:"https://drive.google.com/file/d/1SIw7FOOORCMnr9lvjWLIDu3iPViL3CMx/preview"},
+];
+
+function openModal(i){
+  const m=movies[i];
+  document.getElementById('modalTitle').textContent=m.title;
+  document.getElementById('modalFrame').src=m.src;
+  document.getElementById('modalInfo').innerHTML=`
+    <span class="modal-chip">📅 ${m.year}</span>
+    <span class="modal-chip">🎬 ${m.quality}</span>
+    <span class="modal-chip">🎭 ${m.genre}</span>
+    ${m.size!=='—'?`<span class="modal-chip">💾 ${m.size}</span>`:''}
+    <span class="modal-chip">🌍 Español Latino</span>`;
+  document.getElementById('modalBg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modalBg').classList.remove('open');
+  document.getElementById('modalFrame').src='';
+  document.body.style.overflow='';
+}
+function closeModalBg(e){if(e.target===document.getElementById('modalBg'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+let activeFilter='all';
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filterMovies();
+}
+function filterMovies(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.card').forEach((card,i)=>{
+    const m=movies[i];
+    const ms=m.title.toLowerCase().includes(q);
+    const mf=activeFilter==='all'||card.dataset.year===activeFilter||card.dataset.genre===activeFilter;
+    card.classList.toggle('hidden',!(ms&&mf));
+  });
+}
+document.querySelectorAll('.card').forEach((c,i)=>{c.style.animationDelay=`${0.05*i}s`;});
+</script>
+</body>
+</html>

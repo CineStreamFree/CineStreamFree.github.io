@@ -3,824 +3,859 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CineStream — Películas en Línea Gratis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <title>CineStream — Ver Películas Online Gratis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
 
   <style>
-    /* =====================================================
-       VARIABLES DE COLOR Y FUENTES
-    ===================================================== */
+    /* ─── VARIABLES ─── */
     :root {
-      --bg:      #080a0f;
-      --surface: #0e1117;
-      --card:    #12161f;
-      --border:  #1e2533;
+      --bg:      #06080f;
+      --surface: #0c0f1a;
+      --card:    #10141f;
+      --border:  #1a2030;
       --accent:  #e63946;
       --accent2: #f4a261;
       --gold:    #ffd166;
-      --white:   #f0f2f7;
+      --white:   #eef0f7;
       --muted:   #6b7a99;
-      --dim:     #3a4560;
+      --dim:     #323c55;
+      --green:   #26c687;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--bg);color:var(--white);
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(ellipse 80% 40% at 50% 0%,rgba(230,57,70,.1) 0%,transparent 60%),
+        radial-gradient(ellipse 50% 30% at 100% 100%,rgba(244,162,97,.06) 0%,transparent 60%);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* ─── NAVBAR ─── */
+    nav{
+      position:sticky;top:0;z-index:200;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 28px;height:60px;
+      background:rgba(6,8,15,.9);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .logo{
+      font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      text-decoration:none;
+    }
+    .nav-search{
+      display:flex;align-items:center;gap:8px;
+      background:var(--card);border:1px solid var(--border);
+      border-radius:10px;padding:7px 14px;
+      flex:1;max-width:400px;margin:0 20px;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .nav-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,57,70,.1);}
+    .nav-search input{
+      background:none;border:none;outline:none;
+      color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;width:100%;
+    }
+    .nav-search input::placeholder{color:var(--dim);}
+    .nav-search span{color:var(--dim);font-size:16px;flex-shrink:0;}
+    .nav-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+    .nav-pill{
+      font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--muted);padding:4px 12px;
+      border:1px solid var(--border);border-radius:20px;
     }
 
-    /* Textura sutil de fondo */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0; opacity: .4;
+    /* ─── HERO ─── */
+    .hero{
+      position:relative;z-index:1;
+      text-align:center;padding:70px 24px 50px;
+    }
+    .hero-eyebrow{
+      display:inline-flex;align-items:center;gap:10px;
+      font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+      color:var(--accent);margin-bottom:18px;
+    }
+    .hero-eyebrow::before,.hero-eyebrow::after{
+      content:'';height:1px;width:36px;background:var(--accent);opacity:.4;
+    }
+    .hero h1{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(50px,9vw,90px);letter-spacing:4px;line-height:.95;
+      margin-bottom:14px;
+    }
+    .hero h1 span{
+      display:block;
+      background:linear-gradient(135deg,#fff 0%,#6b7a99 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .hero h1 em{
+      display:block;font-style:italic;
+      font-family:'DM Serif Display',serif;font-size:.52em;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .hero-sub{font-size:15px;color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.65;}
+
+    /* ─── SEARCH BOX GRANDE ─── */
+    .search-hero{
+      position:relative;max-width:580px;margin:0 auto 40px;padding:0 16px;
+    }
+    .search-hero input{
+      width:100%;padding:17px 56px 17px 22px;
+      background:var(--card);border:1px solid var(--border);border-radius:14px;
+      color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .search-hero input::placeholder{color:var(--dim);}
+    .search-hero input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,57,70,.1);}
+    .search-hero .s-icon{
+      position:absolute;right:30px;top:50%;transform:translateY(-50%);
+      color:var(--dim);font-size:20px;pointer-events:none;
     }
 
-    /* Brillo superior */
-    .hero-glow {
-      position: fixed; top: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 900px; height: 500px;
-      background: radial-gradient(ellipse, rgba(230,57,70,.12) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
+    /* ─── STATS ─── */
+    .stats{
+      display:inline-flex;gap:28px;padding:14px 28px;
+      background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    }
+    .stat{text-align:center;}
+    .stat-n{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--gold);}
+    .stat-l{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+
+    /* ─── SECTION HEADER ─── */
+    .sec-hdr{
+      display:flex;align-items:center;gap:14px;
+      padding:0 28px;margin-bottom:20px;position:relative;z-index:1;
+    }
+    .sec-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;}
+    .sec-line{flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
+    .sec-badge{
+      font-size:10px;font-weight:700;letter-spacing:1px;
+      color:var(--accent);background:rgba(230,57,70,.1);
+      padding:3px 10px;border-radius:20px;border:1px solid rgba(230,57,70,.2);
     }
 
-    /* =====================================================
-       NAVBAR
-    ===================================================== */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; height: 64px;
-      background: rgba(8,10,15,.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+    /* ─── GRID ─── */
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:16px;padding:0 28px 60px;position:relative;z-index:1;
     }
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px; letter-spacing: 3px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-decoration: none;
-    }
-    .nav-badge {
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted); padding: 4px 12px;
-      border: 1px solid var(--border); border-radius: 20px;
+    @media(max-width:500px){
+      .grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:0 12px 48px;}
+      .sec-hdr{padding:0 12px;}
+      nav{padding:0 14px;}
+      .nav-search{display:none;}
     }
 
-    /* =====================================================
-       HERO
-    ===================================================== */
-    .hero {
-      position: relative;
-      text-align: center;
-      padding: 80px 24px 60px;
-      z-index: 1;
+    /* ─── CARD ─── */
+    .card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:14px;overflow:hidden;cursor:pointer;
+      transition:transform .22s,border-color .22s,box-shadow .22s;
+      animation:fadeUp .45s ease both;
     }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 3px; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 20px;
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(230,57,70,.5);
+      box-shadow:0 16px 36px rgba(0,0,0,.6),0 0 0 1px rgba(230,57,70,.15);
     }
-    .hero-eyebrow::before, .hero-eyebrow::after {
-      content: ''; height: 1px; width: 40px;
-      background: var(--accent); opacity: .4;
+    .card-thumb{
+      position:relative;width:100%;aspect-ratio:2/3;
+      background:var(--surface);overflow:hidden;
     }
-    .hero h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(52px, 10vw, 96px);
-      letter-spacing: 4px; line-height: .95;
-      margin-bottom: 16px;
+    .card-thumb img{
+      width:100%;height:100%;object-fit:cover;
+      transition:transform .35s;display:block;
     }
-    .hero h1 span {
-      display: block;
-      background: linear-gradient(135deg, #fff 0%, #6b7a99 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .card:hover .card-thumb img{transform:scale(1.05);}
+    .card-fallback{
+      width:100%;height:100%;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:8px;
+      background:linear-gradient(135deg,#0c0f1a,#10141f);
     }
-    .hero h1 em {
-      display: block; font-style: italic;
-      font-family: 'DM Serif Display', serif; font-size: .55em;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .card-initials{
+      font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:3px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
-    .hero-sub {
-      font-size: 15px; color: var(--muted);
-      max-width: 440px; margin: 0 auto 32px; line-height: 1.6;
+    /* Overlay play */
+    .card-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(6,8,15,.96) 0%,transparent 55%);
+      opacity:0;transition:opacity .25s;
     }
-    .hero-stats {
-      display: inline-flex; gap: 32px;
-      padding: 16px 32px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+    .card:hover .card-overlay{opacity:1;}
+    .play-circle{
+      position:absolute;bottom:50%;left:50%;
+      transform:translate(-50%,50%) scale(.7);
+      width:42px;height:42px;border-radius:50%;
+      background:var(--accent);
+      display:flex;align-items:center;justify-content:center;
+      font-size:15px;opacity:0;transition:all .22s;
+      box-shadow:0 4px 14px rgba(230,57,70,.5);
     }
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px; letter-spacing: 2px; color: var(--gold);
+    .card:hover .play-circle{opacity:1;transform:translate(-50%,50%) scale(1);}
+    /* Rating badge */
+    .card-rating{
+      position:absolute;top:8px;right:8px;
+      font-size:10px;font-weight:700;
+      background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+      color:var(--gold);padding:3px 7px;border-radius:6px;
     }
-    .stat-label {
-      font-size: 10px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--muted); margin-top: 2px;
+    /* Tipo badge */
+    .card-type{
+      position:absolute;top:8px;left:8px;
+      font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      padding:3px 7px;border-radius:6px;
     }
-
-    /* =====================================================
-       BUSCADOR
-    ===================================================== */
-    .search-wrap {
-      position: relative; z-index: 1;
-      max-width: 560px; margin: 0 auto 56px; padding: 0 24px;
+    .type-drive{background:rgba(38,198,135,.9);color:#0a0a0a;}
+    .type-stream{background:rgba(230,57,70,.9);color:#fff;}
+    /* Info */
+    .card-body{padding:10px 12px 13px;}
+    .card-title{
+      font-family:'DM Serif Display',serif;font-size:13px;
+      line-height:1.3;color:var(--white);margin-bottom:4px;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
     }
-    .search-input {
-      width: 100%; padding: 16px 52px 16px 20px;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; color: var(--white);
-      font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .search-input::placeholder { color: var(--dim); }
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(230,57,70,.12);
-    }
-    .search-icon {
-      position: absolute; right: 40px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--dim); font-size: 18px; pointer-events: none;
+    .card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .card-year{font-size:11px;color:var(--muted);}
+    .card-quality{
+      font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      color:var(--gold);
     }
 
-    /* =====================================================
-       ENCABEZADO DE SECCION
-    ===================================================== */
-    .section-header {
-      display: flex; align-items: center; gap: 16px;
-      padding: 0 32px; margin-bottom: 28px;
-      position: relative; z-index: 1;
+    /* ─── LOADING SKELETON ─── */
+    .skeleton{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:14px;overflow:hidden;
     }
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px; letter-spacing: 3px; color: var(--white);
+    .skel-thumb{
+      width:100%;aspect-ratio:2/3;
+      background:linear-gradient(90deg,var(--surface) 25%,var(--border) 50%,var(--surface) 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.4s infinite;
     }
-    .section-line {
-      flex: 1; height: 1px;
-      background: linear-gradient(to right, var(--border), transparent);
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-body{padding:10px 12px 13px;}
+    .skel-line{
+      height:12px;border-radius:6px;margin-bottom:6px;
+      background:linear-gradient(90deg,var(--surface) 25%,var(--border) 50%,var(--surface) 75%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite;
     }
-    .section-count {
-      font-size: 11px; font-weight: 600;
-      color: var(--accent); letter-spacing: 1px;
-      background: rgba(230,57,70,.1); padding: 4px 10px;
-      border-radius: 20px; border: 1px solid rgba(230,57,70,.2);
+    .skel-line.short{width:50%;}
+
+    /* ─── MODAL ─── */
+    .modal-back{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.95);backdrop-filter:blur(16px);
+      z-index:500;display:flex;align-items:center;justify-content:center;
+      padding:16px;opacity:0;pointer-events:none;transition:opacity .3s;
+    }
+    .modal-back.open{opacity:1;pointer-events:all;}
+    .modal{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:20px;width:100%;max-width:900px;
+      max-height:92vh;overflow-y:auto;
+      transform:scale(.94) translateY(16px);transition:transform .3s;
+      display:flex;flex-direction:column;
+    }
+    .modal-back.open .modal{transform:scale(1) translateY(0);}
+
+    /* Cabecera modal */
+    .modal-head{
+      display:flex;align-items:flex-start;gap:16px;
+      padding:20px 22px 16px;border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .modal-poster{
+      width:72px;height:108px;border-radius:10px;
+      object-fit:cover;flex-shrink:0;
+    }
+    .modal-poster-fallback{
+      width:72px;height:108px;border-radius:10px;
+      background:var(--surface);display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue',sans-serif;font-size:22px;
+      color:var(--accent);flex-shrink:0;
+    }
+    .modal-info{flex:1;min-width:0;}
+    .modal-title{font-family:'DM Serif Display',serif;font-size:20px;line-height:1.2;margin-bottom:6px;}
+    .modal-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+    .chip{
+      font-size:11px;font-weight:500;padding:3px 10px;
+      border:1px solid var(--border);border-radius:20px;color:var(--muted);
+    }
+    .chip.hl{background:rgba(230,57,70,.1);border-color:rgba(230,57,70,.3);color:var(--accent);}
+    .chip.gold{background:rgba(255,209,102,.1);border-color:rgba(255,209,102,.3);color:var(--gold);}
+    .modal-synopsis{font-size:13px;color:var(--muted);line-height:1.65;margin-top:6px;}
+    .modal-back-btn{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:8px 16px;background:var(--surface);border:1px solid var(--border);
+      border-radius:10px;color:var(--white);
+      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+      cursor:pointer;white-space:nowrap;flex-shrink:0;
+      transition:background .2s,border-color .2s;
+    }
+    .modal-back-btn:hover{background:var(--accent);border-color:var(--accent);}
+
+    /* Player area */
+    .player-area{flex-shrink:0;}
+    .player-wrap{
+      position:relative;width:100%;aspect-ratio:16/9;background:#000;
+    }
+    .player-wrap iframe{
+      position:absolute;inset:0;width:100%;height:100%;border:none;
+    }
+    .player-loading{
+      position:absolute;inset:0;background:#000;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    }
+    .spinner{
+      width:44px;height:44px;border-radius:50%;
+      border:4px solid rgba(255,255,255,.1);
+      border-top-color:var(--accent);
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .player-loading p{font-size:13px;color:var(--muted);}
+
+    /* Selector de reproductores */
+    .player-tabs{
+      display:flex;align-items:center;gap:8px;
+      padding:12px 20px;border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);flex-wrap:wrap;
+    }
+    .player-tabs span{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+    .ptab{
+      padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+      border:1px solid var(--border);background:var(--surface);
+      color:var(--muted);cursor:pointer;transition:all .18s;
+    }
+    .ptab:hover{border-color:var(--accent);color:var(--white);}
+    .ptab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+    /* Nota */
+    .player-note{
+      padding:10px 20px;
+      font-size:12px;color:var(--dim);
+      background:rgba(230,57,70,.04);
+      border-bottom:1px solid var(--border);
     }
 
-    /* =====================================================
-       GRID DE PELICULAS
-    ===================================================== */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 0 32px 80px;
-      position: relative; z-index: 1;
+    /* ─── EMPTY STATE ─── */
+    .empty{
+      display:none;grid-column:1/-1;
+      text-align:center;padding:50px 16px;
     }
+    .empty.show{display:block;}
+    .empty-icon{font-size:44px;opacity:.25;margin-bottom:14px;}
+    .empty p{color:var(--muted);font-size:14px;}
 
-    /* =====================================================
-       TARJETA DE PELICULA
-    ===================================================== */
-    .card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; overflow: hidden; cursor: pointer;
-      transition: transform .25s, border-color .25s, box-shadow .25s;
-      animation: fadeUp .5s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(230,57,70,.4);
-      box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(230,57,70,.15);
-    }
+    /* ─── DIVIDER ─── */
+    .section-gap{height:40px;}
 
-    /* Miniatura / Poster */
-    .card-thumb {
-      position: relative; width: 100%; aspect-ratio: 2/3;
-      background: var(--surface); overflow: hidden;
+    /* ─── FOOTER ─── */
+    footer{
+      position:relative;z-index:1;
+      text-align:center;padding:28px 20px;
+      border-top:1px solid var(--border);
+      font-size:12px;color:var(--dim);letter-spacing:.5px;
     }
-    .card-thumb img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform .4s; display: block;
-    }
-    .card:hover .card-thumb img { transform: scale(1.06); }
+    footer b{color:var(--accent);}
 
-    /* Fallback cuando no hay imagen */
-    .card-thumb-fallback {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 12px;
-      background: linear-gradient(135deg, #0e1117, #12161f);
-    }
-    .card-thumb-initial {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 48px; letter-spacing: 4px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text; line-height: 1;
-    }
-
-    /* Boton play al hacer hover */
-    .play-btn {
-      position: absolute; bottom: 50%; left: 50%;
-      transform: translate(-50%, 50%) scale(.8);
-      width: 44px; height: 44px;
-      background: var(--accent); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      box-shadow: 0 4px 16px rgba(230,57,70,.5);
-      opacity: 0; transition: all .25s;
-    }
-    .card:hover .play-btn {
-      opacity: 1; transform: translate(-50%, 50%) scale(1);
-    }
-
-    /* Overlay oscuro al hover */
-    .card-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(8,10,15,.95) 0%, transparent 50%);
-      opacity: 0; transition: opacity .3s;
-    }
-    .card:hover .card-overlay { opacity: 1; }
-
-    /* Badges (HD / CAM / Nuevo) */
-    .card-badge {
-      position: absolute; top: 10px; left: 10px;
-      font-size: 9px; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 3px 8px; border-radius: 6px;
-    }
-    .badge-hd  { background: rgba(255,209,102,.9); color: #0a0a0a; }
-    .badge-cam { background: rgba(230,57,70,.9);   color: #fff; }
-    .badge-new { background: rgba(38,198,134,.9);  color: #0a0a0a; }
-
-    /* Anno en esquina superior derecha */
-    .card-year {
-      position: absolute; top: 10px; right: 10px;
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,.7);
-      background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
-      padding: 3px 8px; border-radius: 6px;
-    }
-
-    /* Info debajo del poster */
-    .card-body { padding: 14px 14px 16px; }
-    .card-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 15px; line-height: 1.3;
-      color: var(--white); margin-bottom: 6px;
-    }
-    .card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .card-size {
-      font-size: 11px; color: var(--muted);
-      background: var(--surface); padding: 2px 8px;
-      border-radius: 20px; border: 1px solid var(--border);
-    }
-    .card-quality {
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 1px; text-transform: uppercase; color: var(--gold);
-    }
-
-    /* =====================================================
-       MODAL (reproductor)
-    ===================================================== */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.92); backdrop-filter: blur(12px);
-      z-index: 1000;
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none; transition: opacity .3s;
-    }
-    .modal-backdrop.open { opacity: 1; pointer-events: all; }
-
-    .modal {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 20px;
-      width: 100%; max-width: 840px; max-height: 90vh;
-      overflow: hidden;
-      transform: scale(.95) translateY(20px); transition: transform .3s;
-      display: flex; flex-direction: column;
-    }
-    .modal-backdrop.open .modal { transform: scale(1) translateY(0); }
-
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
-      flex-shrink: 0; gap: 16px;
-    }
-    .modal-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 20px; flex: 1;
-    }
-
-    /* Boton Atras */
-    .modal-back {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 20px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--white);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; white-space: nowrap;
-      transition: background .2s, border-color .2s, color .2s;
-      flex-shrink: 0;
-    }
-    .modal-back:hover {
-      background: var(--accent); border-color: var(--accent);
-    }
-
-    /* Reproductor */
-    .modal-player {
-      position: relative; width: 100%; aspect-ratio: 16/9;
-      background: #000; flex-shrink: 0;
-    }
-    .modal-player iframe {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%; border: none;
-    }
-
-    /* Chips de info */
-    .modal-info {
-      padding: 20px 24px;
-      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
-      border-top: 1px solid var(--border); flex-shrink: 0;
-    }
-    .modal-chip {
-      font-size: 12px; font-weight: 500;
-      padding: 5px 14px; border: 1px solid var(--border);
-      border-radius: 20px; color: var(--muted);
-    }
-    .modal-chip.highlight {
-      background: rgba(230,57,70,.1);
-      border-color: rgba(230,57,70,.3); color: var(--accent);
-    }
-
-    /* =====================================================
-       ESTADO VACIO (busqueda sin resultados)
-    ===================================================== */
-    .empty-state {
-      display: none; grid-column: 1/-1;
-      text-align: center; padding: 60px 20px;
-    }
-    .empty-state.show { display: block; }
-    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .3; }
-    .empty-text { color: var(--muted); font-size: 15px; }
-
-    /* =====================================================
-       FOOTER
-    ===================================================== */
-    footer {
-      position: relative; z-index: 1;
-      text-align: center; padding: 32px 24px;
-      border-top: 1px solid var(--border);
-      font-size: 12px; color: var(--dim); letter-spacing: 1px;
-    }
-    footer span { color: var(--accent); font-weight: 600; }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 3px; }
-
-    /* =====================================================
-       RESPONSIVE
-    ===================================================== */
-    @media (max-width: 600px) {
-      nav { padding: 0 16px; }
-      .grid { padding: 0 16px 60px; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .section-header { padding: 0 16px; }
-      .hero { padding: 48px 16px 40px; }
-      .hero-stats { gap: 20px; padding: 12px 20px; }
-      .modal-title { font-size: 16px; }
-    }
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--dim);border-radius:3px;}
   </style>
 </head>
 <body>
 
-<div class="hero-glow"></div>
-
+<!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
 <nav>
-  <a class="nav-logo" href="#">CineStream</a>
-  <div class="nav-badge" id="navBadge">🎬 ...</div>
+  <a class="logo" href="#">CineStream</a>
+  <div class="nav-search">
+    <span>🔍</span>
+    <input type="text" id="navSearch" placeholder="Buscar película..."/>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill" id="navPill">Cargando...</div>
+  </div>
 </nav>
 
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-eyebrow">Streaming Gratuito</div>
   <h1>
-    <span>Ver Películas</span>
-    <em>Online Gratis</em>
+    <span>Millones de</span>
+    <em>Películas Online</em>
   </h1>
-  <p class="hero-sub">La mejor selección de películas en HD. Sin registro, sin esperas. Solo dale play y disfruta.</p>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num" id="totalCount">0</div>
-      <div class="stat-label">Películas</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">HD</div>
-      <div class="stat-label">Calidad</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Gratis</div>
-    </div>
+  <p class="hero-sub">Busca cualquier película del mundo. Sin registro, sin pagos. Solo dale play.</p>
+
+  <div class="search-hero">
+    <input type="text" id="heroSearch" placeholder="¿Qué quieres ver hoy? Ej: Avengers, Dune, Spider-Man..."/>
+    <span class="s-icon">🎬</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n">∞</div><div class="stat-l">Películas</div></div>
+    <div class="stat"><div class="stat-n">HD</div><div class="stat-l">Calidad</div></div>
+    <div class="stat"><div class="stat-n">3</div><div class="stat-l">Reproductores</div></div>
+    <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Gratis</div></div>
   </div>
 </section>
 
-<div class="search-wrap">
-  <input class="search-input" type="text" id="searchInput" placeholder="Buscar película..."/>
-  <span class="search-icon">🔍</span>
-</div>
-
-<div class="section-header">
-  <h2 class="section-title">Catálogo Completo</h2>
-  <div class="section-line"></div>
-  <div class="section-count" id="countLabel">0 títulos</div>
-</div>
-
-<div class="grid" id="movieGrid">
-  <div class="empty-state" id="emptyState">
-    <div class="empty-icon">🎬</div>
-    <p class="empty-text">No se encontraron resultados.</p>
+<!-- ═══════════════════════════════════════
+     RESULTADOS DE BÚSQUEDA (oculto por defecto)
+═══════════════════════════════════════ -->
+<div id="searchSection" style="display:none">
+  <div class="sec-hdr">
+    <h2 class="sec-title">Resultados</h2>
+    <div class="sec-line"></div>
+    <div class="sec-badge" id="searchCount">0 resultados</div>
+  </div>
+  <div class="grid" id="searchGrid">
+    <div class="empty" id="searchEmpty">
+      <div class="empty-icon">🔍</div>
+      <p>No se encontraron resultados. Intenta con otro nombre.</p>
+    </div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modalTitle">—</div>
-      <button class="modal-back" id="modalBack">← Atrás</button>
-    </div>
-    <div class="modal-player">
-      <iframe
-        id="modalIframe"
-        allowfullscreen
-        allow="autoplay; fullscreen; encrypted-media"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-      ></iframe>
-    </div>
-    <div class="modal-info" id="modalInfo"></div>
+<!-- ═══════════════════════════════════════
+     TENDENCIAS (TMDB)
+═══════════════════════════════════════ -->
+<div id="trendingSection">
+  <div class="sec-hdr">
+    <h2 class="sec-title">🔥 Tendencias Ahora</h2>
+    <div class="sec-line"></div>
+    <div class="sec-badge">Actualizado hoy</div>
+  </div>
+  <div class="grid" id="trendingGrid">
+    <!-- Skeletons mientras carga -->
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
   </div>
 </div>
 
-<footer>
-  Hecho con ❤️ · <span>CineStream</span> · Solo para uso educativo · © 2025
-</footer>
+<div class="section-gap"></div>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN DRIVE (tus 18 películas)
+═══════════════════════════════════════ -->
+<div id="driveSection">
+  <div class="sec-hdr">
+    <h2 class="sec-title">💾 Nuestro Catálogo Drive</h2>
+    <div class="sec-line"></div>
+    <div class="sec-badge" id="driveBadge">18 películas</div>
+  </div>
+  <div class="grid" id="driveGrid">
+    <div class="empty" id="driveEmpty">
+      <div class="empty-icon">💾</div>
+      <p>No se encontraron películas Drive.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL REPRODUCTOR
+═══════════════════════════════════════ -->
+<div class="modal-back" id="modalBack">
+  <div class="modal" id="modal">
+
+    <!-- Cabecera -->
+    <div class="modal-head">
+      <img id="mPoster" class="modal-poster" src="" alt=""/>
+      <div class="modal-info">
+        <div class="modal-title" id="mTitle">—</div>
+        <div class="modal-chips" id="mChips"></div>
+        <div class="modal-synopsis" id="mSynopsis"></div>
+      </div>
+      <button class="modal-back-btn" id="btnAtras">← Atrás</button>
+    </div>
+
+    <!-- Selector de reproductores -->
+    <div class="player-tabs" id="playerTabs">
+      <span>Reproductor:</span>
+    </div>
+
+    <!-- Nota -->
+    <div class="player-note" id="playerNote">
+      💡 Si un reproductor no carga, prueba con otro. Los reproductores de streaming funcionan mejor en PC.
+    </div>
+
+    <!-- Reproductor -->
+    <div class="player-area">
+      <div class="player-wrap">
+        <div class="player-loading" id="playerLoading">
+          <div class="spinner"></div>
+          <p>Cargando reproductor...</p>
+        </div>
+        <iframe
+          id="playerIframe"
+          allowfullscreen
+          allow="autoplay; fullscreen; encrypted-media"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+        ></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>Hecho con ❤️ · <b>CineStream</b> · Solo uso educativo · © 2025</footer>
 
 
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
 <script>
-/* ╔═══════════════════════════════════════════════════════════════╗
-   ║          LISTA DE PELÍCULAS — EDITA SOLO AQUÍ               ║
-   ║                                                             ║
-   ║  Para agregar una película nueva, añade un bloque así:      ║
-   ║                                                             ║
-   ║  {                                                          ║
-   ║    titulo:  "Nombre de la Película",                        ║
-   ║    anno:    "2025",          ← año de estreno               ║
-   ║    tamano:  "3.0GB",         ← tamaño del archivo           ║
-   ║    calidad: "1080p",         ← "1080p" "HDTS" "CAM" "HD"   ║
-   ║    badge:   "new",           ← "hd" "cam" "new" o ""       ║
-   ║    driveId: "XXXXXXXXXXXX",  ← ID de Google Drive           ║
-   ║    poster:  "https://...",   ← URL del poster (imagen)      ║
-   ║  },                                                         ║
-   ║                                                             ║
-   ║  El driveId es la parte del link entre /d/ y /preview       ║
-   ║  Ejemplo: drive.google.com/file/d/[ESTE_ES_EL_ID]/preview  ║
-   ║                                                             ║
-   ║  Si no tienes poster, deja poster: ""  y se mostraran      ║
-   ║  las iniciales automaticamente.                             ║
-   ╚═══════════════════════════════════════════════════════════════╝ */
 
-const PELICULAS = [
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  CONFIGURACIÓN — Edita solo esta sección                   ║
+   ║                                                            ║
+   ║  TMDB_KEY: Obtén tu clave GRATIS en:                       ║
+   ║  https://www.themoviedb.org/settings/api                   ║
+   ║  Solo necesitas crear una cuenta gratis y pedir la API     ║
+   ╚══════════════════════════════════════════════════════════════╝ */
 
-  {
-    titulo:  "Capitán América: Un Nuevo Mundo",
-    anno:    "2025",
-    tamano:  "3.8GB",
-    calidad: "1080p",
-    badge:   "new",
-    driveId: "15RCWEOW_bzgrgWrX2RwKAj_0Re2Cbzkt",
-    poster:  "https://image.tmdb.org/t/p/w400/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg"
-  },
-  {
-    titulo:  "El Abismo Secreto",
-    anno:    "2025",
-    tamano:  "4.2GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "14qaUUtOynmdd1nmW7vAN5RPFFRRaxHEL",
-    poster:  "https://m.media-amazon.com/images/S/pv-target-images/1525a276ee149fa52adc709faa8535a7a7fb02fc9d398a783d20bd35f4c78b7d.jpg"
-  },
-  {
-    titulo:  "Emilia Pérez",
-    anno:    "2025",
-    tamano:  "2.4GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1AgKQyfZQw1AR2TQXzxI8kQACXC3KkGBa",
-    poster:  "https://m.media-amazon.com/images/M/MV5BNjBhMWVmYjQtYmI2NC00NjdiLTliMjQtODliYjI5OTZmMzczXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
-  },
-  {
-    titulo:  "El Conde de Montecristo",
-    anno:    "2024",
-    tamano:  "3.1GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1Hf0vGvYHc8LsM6AG2KTGFVgmGYSpMISh",
-    poster:  "https://m.media-amazon.com/images/S/pv-target-images/a8e9f64c2eed464d708764cc90da3c057dd13f457c28078bcfffa03df1defca5.jpg"
-  },
-  {
-    titulo:  "El Lado Oscuro del Deseo",
-    anno:    "2015",
-    tamano:  "4.3GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "12RKnUBNqg9_K1WXJO_gHh3ZCVY9W6z8f",
-    poster:  "https://m.media-amazon.com/images/M/MV5BNmJmZDlhN2QtNTc3ZC00NTBlLTg0MGYtMWZiYTQ1NzE1MmYwXkEyXkFqcGc@._V1_.jpg"
-  },
-  {
-    titulo:  "De Vuelta a la Acción",
-    anno:    "2025",
-    tamano:  "2.6GB",
-    calidad: "1080p",
-    badge:   "new",
-    driveId: "18vfd9ep7tCdMKmn4-0k561AfoNUuvMDu",
-    poster:  "https://images.justwatch.com/poster/323393666/s718/back-in-action.jpg"
-  },
-  {
-    titulo:  "El Robo Perfecto: Pantera",
-    anno:    "2025",
-    tamano:  "3.7GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "11PSUk9ONJdZBs2sGYNE0E6ljZLTqVqem",
-    poster:  "https://m.media-amazon.com/images/S/pv-target-images/baed433170a707b35617224e5e755189610708cfc0ac6e1ace688bfd7a366bce.png"
-  },
-  {
-    titulo:  "Wolf Man",
-    anno:    "2025",
-    tamano:  "3.6GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1JNfka3tnHx2G-wKiAplE0JPLOTeB5iE8",
-    poster:  "https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Wolf_Man_2025_poster.jpg/250px-Wolf_Man_2025_poster.jpg"
-  },
-  {
-    titulo:  "Nosferatu",
-    anno:    "2024",
-    tamano:  "2.1GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "125V3X7VwTph9J2Vlqh8ena4sfY9KIALk",
-    poster:  "https://images.justwatch.com/poster/323236127/s718/nosferatu.jpg"
-  },
-  {
-    titulo:  "Ready Player One",
-    anno:    "2018",
-    tamano:  "3.4GB",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1uUpKLBt6oqwOyDOD3nboCCn8jvkDUIsw",
-    poster:  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiiA5HJdXUSKxFZ-tERBA5WEpZGIfG9TataA&s"
-  },
-  {
-    titulo:  "Mufasa: El Rey León",
-    anno:    "2024",
-    tamano:  "3.6GB",
-    calidad: "HDTS",
-    badge:   "cam",
-    driveId: "1pdkjGChnEKg3L_XkcjOpotoJyyfxpHJn",
-    poster:  "https://image.tmdb.org/t/p/w400/lurEK87kukWNaHd0zYnsi3yzJrs.jpg"
-  },
-  {
-    titulo:  "Moana 2",
-    anno:    "2024",
-    tamano:  "3.5GB",
-    calidad: "HDTS",
-    badge:   "cam",
-    driveId: "1tAHer78x-q_YRVtDtThPoH7IDXR4K27f",
-    poster:  "https://image.tmdb.org/t/p/w400/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg"
-  },
-  {
-    titulo:  "Venom 3: El Último Baile",
-    anno:    "2024",
-    tamano:  "",
-    calidad: "HDTS",
-    badge:   "cam",
-    driveId: "1SkNe7pUtlQu94obbBjc_jHmmaU0EnFui",
-    poster:  "https://image.tmdb.org/t/p/w400/aosm8NMQ3UyoBVpSxyimorCQykC.jpg"
-  },
-  {
-    titulo:  "El Renacido",
-    anno:    "2015",
-    tamano:  "",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1Iui2BZZbWxg0y_JGK-t6TMeAsV7HGleg",
-    poster:  "https://es.web.img3.acsta.net/c_310_420/pictures/15/12/14/16/38/050093.jpg"
-  },
-  {
-    titulo:  "Mavka: Guardiana del Bosque",
-    anno:    "2023",
-    tamano:  "",
-    calidad: "1080p",
-    badge:   "hd",
-    driveId: "1Y5WcVRMUWiITXFKSlp5S3TlLSWBtrwmS",
-    poster:  "https://upload.wikimedia.org/wikipedia/commons/e/e1/POSTER_MAVKA._THE_FOREST_SONG.png"
-  },
-  {
-    titulo:  "Máquina de Guerra",
-    anno:    "",
-    tamano:  "",
-    calidad: "HD",
-    badge:   "hd",
-    driveId: "1oqKAtDPxgus2OAoAlbAUzdl33w8F6Td2",
-    poster:  "https://occ-0-4234-3933.1.nflxso.net/dnm/api/v6/mAcAr9TxZIVbINe88xb3Teg5_OA/AAAABUthxv_D5tuU9qUhjfq55LTs_EjDqje8TSXjZXuizeqDufLUDRLNnkgzWCTXrKdxIMWcANmI9tFGn-LHjMbIwFY9ogMJ6TLx6LLNUhGWjwknFEyncs87aGYw2hpgh--IIH4R_g.webp?r=e9f"
-  },
-  {
-    titulo:  "El Monstruo Marino",
-    anno:    "",
-    tamano:  "",
-    calidad: "HD",
-    badge:   "hd",
-    driveId: "1rWSbqdb3j-DnCIi70e-mAX3ikm99xugB",
-    poster:  "https://images.justwatch.com/poster/290725245/s718/the-sea-beast.jpg"
-  },
-  {
-    titulo:  "Avatar: Fuego y Ceniza",
-    anno:    "2025",
-    tamano:  "",
-    calidad: "HD",
-    badge:   "new",
-    driveId: "1SIw7FOOORCMnr9lvjWLIDu3iPViL3CMx",
-    poster:  "https://lumiere-a.akamaihd.net/v1/images/image_8ac3fa97.jpeg"
-  },
+const CONFIG = {
+  // ← Reemplaza con tu API key de TMDB (gratis en themoviedb.org)
+  TMDB_KEY: '76c92ba3203a5b7ea90e87b57953c6bc',
 
-  /* ── AGREGA AQUÍ PELÍCULAS NUEVAS ──────────────────────
-  {
-    titulo:  "Nombre de la Película",
-    anno:    "2025",
-    tamano:  "3.0GB",
-    calidad: "1080p",
-    badge:   "new",
-    driveId: "PEGA_EL_ID_DE_GOOGLE_DRIVE_AQUI",
-    poster:  "https://URL-DEL-POSTER.jpg"
-  },
-  ───────────────────────────────────────────────────── */
+  // Idioma para títulos y sinopsis
+  IDIOMA: 'es-ES',
 
+  // Reproductores disponibles (se muestran como botones en el modal)
+  // {nombre, url} — usa {IMDB_ID} o {TMDB_ID} según el servicio
+  REPRODUCTORES: [
+    { nombre: '▶ Servidor 1', tipo: 'stream', url: 'https://vidsrc.to/embed/movie/{TMDB_ID}' },
+    { nombre: '▶ Servidor 2', tipo: 'stream', url: 'https://www.2embed.cc/embed/{IMDB_ID}' },
+    { nombre: '▶ Servidor 3', tipo: 'stream', url: 'https://multiembed.mov/?video_id={IMDB_ID}&tmdb=1' },
+    { nombre: '▶ Servidor 4', tipo: 'stream', url: 'https://embed.su/embed/movie/{IMDB_ID}' },
+  ],
+};
+
+/* ══════════════════════════════════════════════════════════════
+   TUS PELÍCULAS DE GOOGLE DRIVE
+   Para agregar más, copia un bloque y pégalo al final.
+   driveId = el ID entre /d/ y /preview en el link de Drive
+══════════════════════════════════════════════════════════════ */
+const DRIVE_MOVIES = [
+  { titulo:'Capitán América: Un Nuevo Mundo', anno:'2025', tamano:'3.8GB', calidad:'1080p', driveId:'15RCWEOW_bzgrgWrX2RwKAj_0Re2Cbzkt', poster:'https://image.tmdb.org/t/p/w400/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg' },
+  { titulo:'El Abismo Secreto',               anno:'2025', tamano:'4.2GB', calidad:'1080p', driveId:'14qaUUtOynmdd1nmW7vAN5RPFFRRaxHEL', poster:'https://image.tmdb.org/t/p/w400/xg27NrXi7VXCGUr7MG75UqLl21M.jpg' },
+  { titulo:'Emilia Pérez',                    anno:'2025', tamano:'2.4GB', calidad:'1080p', driveId:'1AgKQyfZQw1AR2TQXzxI8kQACXC3KkGBa', poster:'https://image.tmdb.org/t/p/w400/2Lw0FMoFSoqDJcVaR3aWMkf0hdL.jpg' },
+  { titulo:'El Conde de Montecristo',         anno:'2024', tamano:'3.1GB', calidad:'1080p', driveId:'1Hf0vGvYHc8LsM6AG2KTGFVgmGYSpMISh', poster:'https://image.tmdb.org/t/p/w400/aSRfB6F9hIlGepJv4E0GHsv8cPX.jpg' },
+  { titulo:'El Lado Oscuro del Deseo',        anno:'2015', tamano:'4.3GB', calidad:'1080p', driveId:'12RKnUBNqg9_K1WXJO_gHh3ZCVY9W6z8f', poster:'https://image.tmdb.org/t/p/w400/bUEBzDORFNMDIaLm09Y4AOPvXwm.jpg' },
+  { titulo:'De Vuelta a la Acción',           anno:'2025', tamano:'2.6GB', calidad:'1080p', driveId:'18vfd9ep7tCdMKmn4-0k561AfoNUuvMDu', poster:'https://image.tmdb.org/t/p/w400/iiENMcpMNLkIFk6qPyZVpHrLr1Q.jpg' },
+  { titulo:'El Robo Perfecto: Pantera',       anno:'2025', tamano:'3.7GB', calidad:'1080p', driveId:'11PSUk9ONJdZBs2sGYNE0E6ljZLTqVqem', poster:'https://image.tmdb.org/t/p/w400/nTvM4mhAOiPQFAFgDJplMXo4Qcu.jpg' },
+  { titulo:'Wolf Man',                        anno:'2025', tamano:'3.6GB', calidad:'1080p', driveId:'1JNfka3tnHx2G-wKiAplE0JPLOTeB5iE8', poster:'https://image.tmdb.org/t/p/w400/jPECBXgdNQjzD0TwcbAFQxKLPsE.jpg' },
+  { titulo:'Nosferatu',                       anno:'2024', tamano:'2.1GB', calidad:'1080p', driveId:'125V3X7VwTph9J2Vlqh8ena4sfY9KIALk', poster:'https://image.tmdb.org/t/p/w400/5qGIxdEO841C0tdY8vKX4Yzoi0P.jpg' },
+  { titulo:'Ready Player One',               anno:'2018', tamano:'3.4GB', calidad:'1080p', driveId:'1uUpKLBt6oqwOyDOD3nboCCn8jvkDUIsw', poster:'https://image.tmdb.org/t/p/w400/pU1UecAZqMnHfBYHgGcXHMkOljV.jpg' },
+  { titulo:'Mufasa: El Rey León',            anno:'2024', tamano:'3.6GB', calidad:'HDTS',  driveId:'1pdkjGChnEKg3L_XkcjOpotoJyyfxpHJn', poster:'https://image.tmdb.org/t/p/w400/lurEK87kukWNaHd0zYnsi3yzJrs.jpg' },
+  { titulo:'Moana 2',                        anno:'2024', tamano:'3.5GB', calidad:'HDTS',  driveId:'1tAHer78x-q_YRVtDtThPoH7IDXR4K27f', poster:'https://image.tmdb.org/t/p/w400/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg' },
+  { titulo:'Venom 3: El Último Baile',       anno:'2024', tamano:'',      calidad:'HDTS',  driveId:'1SkNe7pUtlQu94obbBjc_jHmmaU0EnFui', poster:'https://image.tmdb.org/t/p/w400/aosm8NMQ3UyoBVpSxyimorCQykC.jpg' },
+  { titulo:'El Renacido',                    anno:'2015', tamano:'',      calidad:'1080p', driveId:'1Iui2BZZbWxg0y_JGK-t6TMeAsV7HGleg', poster:'https://image.tmdb.org/t/p/w400/ji3ecJphATlVgZNY98spZfaAGR7.jpg' },
+  { titulo:'Mavka: Guardiana del Bosque',    anno:'2023', tamano:'',      calidad:'1080p', driveId:'1Y5WcVRMUWiITXFKSlp5S3TlLSWBtrwmS', poster:'https://image.tmdb.org/t/p/w400/scZlQQqnBwAlZHPTBKKhHQrjoHR.jpg' },
+  { titulo:'Máquina de Guerra',              anno:'2026', tamano:'',      calidad:'HD',    driveId:'1oqKAtDPxgus2OAoAlbAUzdl33w8F6Td2', poster:'https://image.tmdb.org/t/p/w400/6WxHZNVtMHbNDFbWh71xOZGmDeK.jpg' },
+  { titulo:'El Monstruo Marino',             anno:'',     tamano:'',      calidad:'HD',    driveId:'1rWSbqdb3j-DnCIi70e-mAX3ikm99xugB', poster:'https://image.tmdb.org/t/p/w400/p8pQLrMJBNq9VnNWWx6WIVTPXRB.jpg' },
+  { titulo:'Avatar: Fuego y Ceniza',         anno:'2025', tamano:'',      calidad:'HD',    driveId:'1SIw7FOOORCMnr9lvjWLIDu3iPViL3CMx', poster:'https://image.tmdb.org/t/p/w400/ljIAs1Y84bGWxb7JIiZKC7LwfbN.jpg' },
 ];
 
-/* ═══════════════════════════════════════════════════════
-   MOTOR DEL SITIO — NO NECESITAS EDITAR NADA DEBAJO
-═══════════════════════════════════════════════════════ */
 
-const grid        = document.getElementById('movieGrid');
-const backdrop    = document.getElementById('modalBackdrop');
-const modalTitle  = document.getElementById('modalTitle');
-const modalIframe = document.getElementById('modalIframe');
-const modalInfo   = document.getElementById('modalInfo');
-const modalBack   = document.getElementById('modalBack');
-const searchInput = document.getElementById('searchInput');
-const countLabel  = document.getElementById('countLabel');
-const totalCount  = document.getElementById('totalCount');
-const navBadge    = document.getElementById('navBadge');
-const emptyState  = document.getElementById('emptyState');
+/* ══════════════════════════════════════════════════════════════
+   MOTOR — No necesitas editar nada debajo
+══════════════════════════════════════════════════════════════ */
 
-// Actualizar contadores
-totalCount.textContent = PELICULAS.length;
-navBadge.textContent   = `🎬 ${PELICULAS.length} Películas`;
-countLabel.textContent = `${PELICULAS.length} títulos`;
+const TMDB = `https://api.themoviedb.org/3`;
+const IMG  = `https://image.tmdb.org/t/p/w400`;
 
-// Iniciales de fallback
-function getIniciales(titulo) {
-  return titulo.split(' ')
-    .filter(w => w.length > 2)
-    .slice(0, 2)
-    .map(w => w[0].toUpperCase())
-    .join('');
+// Elementos del DOM
+const heroSearch    = document.getElementById('heroSearch');
+const navSearch     = document.getElementById('navSearch');
+const searchSection = document.getElementById('searchSection');
+const searchGrid    = document.getElementById('searchGrid');
+const searchCount   = document.getElementById('searchCount');
+const searchEmpty   = document.getElementById('searchEmpty');
+const trendingGrid  = document.getElementById('trendingGrid');
+const driveGrid     = document.getElementById('driveGrid');
+const driveBadge    = document.getElementById('driveBadge');
+const driveEmpty    = document.getElementById('driveEmpty');
+const navPill       = document.getElementById('navPill');
+const modalBackEl   = document.getElementById('modalBack');
+const playerIframe  = document.getElementById('playerIframe');
+const playerLoading = document.getElementById('playerLoading');
+const playerTabs    = document.getElementById('playerTabs');
+const btnAtras      = document.getElementById('btnAtras');
+const mTitle        = document.getElementById('mTitle');
+const mPoster       = document.getElementById('mPoster');
+const mChips        = document.getElementById('mChips');
+const mSynopsis     = document.getElementById('mSynopsis');
+
+let searchTimer = null;
+let currentMovie = null;
+
+/* ── TMDB helper ── */
+async function tmdb(endpoint) {
+  const sep = endpoint.includes('?') ? '&' : '?';
+  const res = await fetch(`${TMDB}${endpoint}${sep}api_key=${CONFIG.TMDB_KEY}&language=${CONFIG.IDIOMA}`);
+  return res.ok ? res.json() : null;
 }
 
-// Crear HTML de una tarjeta
-function crearTarjeta(peli, index) {
-  const iniciales  = getIniciales(peli.titulo);
-  const badgeTexto = { hd: 'HD', cam: 'CAM', new: 'Nuevo' };
+/* ── Iniciales para fallback ── */
+function initials(titulo) {
+  return titulo.split(' ').filter(w=>w.length>2).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
 
+/* ── Crear tarjeta (TMDB o Drive) ── */
+function crearCard(data, index, tipo) {
   const div = document.createElement('div');
   div.className = 'card';
-  div.style.animationDelay = `${index * 0.05}s`;
-  div.dataset.busqueda = peli.titulo.toLowerCase();
+  div.style.animationDelay = `${index * 0.04}s`;
+
+  const posterSrc = data.poster || (data.poster_path ? IMG + data.poster_path : '');
+  const titulo    = data.titulo || data.title || data.name || '—';
+  const anno      = data.anno  || (data.release_date ? data.release_date.slice(0,4) : '') || '';
+  const rating    = data.vote_average ? data.vote_average.toFixed(1) : '';
+  const ini       = initials(titulo);
 
   div.innerHTML = `
     <div class="card-thumb">
-
-      ${peli.poster
-        ? `<img
-             src="${peli.poster}"
-             alt="${peli.titulo}"
-             onerror="this.style.display='none';
-                      this.nextElementSibling.style.display='flex'"/>
-           <div class="card-thumb-fallback" style="display:none">
-             <div class="card-thumb-initial">${iniciales}</div>
-           </div>`
-        : `<div class="card-thumb-fallback">
-             <div class="card-thumb-initial">${iniciales}</div>
-           </div>`
+      ${posterSrc
+        ? `<img src="${posterSrc}" alt="${titulo}" loading="lazy"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+           <div class="card-fallback" style="display:none"><div class="card-initials">${ini}</div></div>`
+        : `<div class="card-fallback"><div class="card-initials">${ini}</div></div>`
       }
-
-      ${peli.badge
-        ? `<div class="card-badge badge-${peli.badge}">${badgeTexto[peli.badge] || ''}</div>`
-        : ''}
-
-      ${peli.anno
-        ? `<div class="card-year">${peli.anno}</div>`
-        : ''}
-
-      <div class="play-btn">▶</div>
+      ${rating ? `<div class="card-rating">⭐ ${rating}</div>` : ''}
+      <div class="card-type ${tipo==='drive' ? 'type-drive' : 'type-stream'}">${tipo==='drive' ? '💾 Drive' : '▶ Stream'}</div>
+      <div class="play-circle">▶</div>
       <div class="card-overlay"></div>
     </div>
-
     <div class="card-body">
-      <div class="card-title">${peli.titulo}</div>
+      <div class="card-title">${titulo}</div>
       <div class="card-meta">
-        <span class="card-quality">${peli.calidad}</span>
-        ${peli.tamano ? `<span class="card-size">${peli.tamano}</span>` : ''}
+        ${anno ? `<span class="card-year">${anno}</span>` : ''}
+        ${data.calidad ? `<span class="card-quality">${data.calidad}</span>` : ''}
+        ${data.tamano  ? `<span class="card-quality">${data.tamano}</span>` : ''}
       </div>
     </div>
   `;
 
-  div.addEventListener('click', () => abrirModal(peli));
+  div.addEventListener('click', () => abrirModal(data, tipo));
   return div;
 }
 
-// Renderizar tarjetas
-PELICULAS.forEach((peli, i) => {
-  grid.insertBefore(crearTarjeta(peli, i), emptyState);
-});
+/* ── Crear tabs de reproductores ── */
+function buildTabs(movie, tipo) {
+  playerTabs.innerHTML = '<span>Reproductor:</span>';
 
-// Abrir modal
-function abrirModal(peli) {
-  modalTitle.textContent = peli.titulo;
-  modalIframe.src = `https://drive.google.com/file/d/${peli.driveId}/preview`;
-  modalInfo.innerHTML = [
-    peli.anno   ? `<span class="modal-chip">📅 ${peli.anno}</span>`   : '',
-    `<span class="modal-chip highlight">🎬 ${peli.calidad}</span>`,
-    peli.tamano ? `<span class="modal-chip">💾 ${peli.tamano}</span>` : '',
-    `<span class="modal-chip">🌐 Español Latino</span>`,
-  ].join('');
-  backdrop.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+  if (tipo === 'drive') {
+    // Solo el reproductor Drive
+    const btn = document.createElement('button');
+    btn.className = 'ptab active';
+    btn.textContent = '💾 Google Drive';
+    playerTabs.appendChild(btn);
+    cargarPlayer(`https://drive.google.com/file/d/${movie.driveId}/preview`);
+    return;
+  }
 
-// Cerrar modal
-function cerrarModal() {
-  backdrop.classList.remove('open');
-  setTimeout(() => { modalIframe.src = ''; }, 300);
-  document.body.style.overflow = '';
-}
-
-modalBack.addEventListener('click', cerrarModal);
-backdrop.addEventListener('click', e => { if (e.target === backdrop) cerrarModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
-
-// Busqueda en tiempo real
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase().trim();
-  const tarjetas = grid.querySelectorAll('.card[data-busqueda]');
-  let visibles = 0;
-
-  tarjetas.forEach(c => {
-    const ok = c.dataset.busqueda.includes(q);
-    c.style.display = ok ? '' : 'none';
-    if (ok) visibles++;
+  // Reproductores de streaming
+  CONFIG.REPRODUCTORES.forEach((rep, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ptab' + (i === 0 ? ' active' : '');
+    btn.textContent = rep.nombre;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const url = rep.url
+        .replace('{TMDB_ID}',  movie.id        || '')
+        .replace('{IMDB_ID}',  movie.imdb_id   || movie.external_ids?.imdb_id || '');
+      cargarPlayer(url);
+    });
+    playerTabs.appendChild(btn);
   });
 
-  countLabel.textContent = `${visibles} título${visibles !== 1 ? 's' : ''}`;
-  emptyState.classList.toggle('show', visibles === 0);
+  // Cargar primer reproductor
+  const first = CONFIG.REPRODUCTORES[0].url
+    .replace('{TMDB_ID}',  movie.id        || '')
+    .replace('{IMDB_ID}',  movie.imdb_id   || movie.external_ids?.imdb_id || '');
+  cargarPlayer(first);
+}
+
+/* ── Cargar iframe del reproductor ── */
+function cargarPlayer(url) {
+  playerLoading.style.display = 'flex';
+  playerIframe.src = '';
+  setTimeout(() => {
+    playerIframe.src = url;
+    playerIframe.onload = () => { playerLoading.style.display = 'none'; };
+    // Ocultar loading si tarda mucho
+    setTimeout(() => { playerLoading.style.display = 'none'; }, 4000);
+  }, 300);
+}
+
+/* ── Abrir modal ── */
+async function abrirModal(data, tipo) {
+  // Limpiar
+  mTitle.textContent    = '⏳ Cargando...';
+  mChips.innerHTML      = '';
+  mSynopsis.textContent = '';
+  mPoster.src           = '';
+  mPoster.style.display = 'none';
+  playerTabs.innerHTML  = '<span>Cargando...</span>';
+  playerIframe.src      = '';
+  playerLoading.style.display = 'flex';
+  modalBackEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  let movie = data;
+
+  // Si es de TMDB, obtener detalles completos incluyendo imdb_id
+  if (tipo === 'stream' && data.id) {
+    const details = await tmdb(`/movie/${data.id}?append_to_response=external_ids`);
+    if (details) movie = { ...data, ...details };
+  }
+
+  currentMovie = movie;
+
+  const titulo   = movie.titulo || movie.title || movie.name || '—';
+  const anno     = movie.anno  || (movie.release_date ? movie.release_date.slice(0,4) : '');
+  const rating   = movie.vote_average ? movie.vote_average.toFixed(1) : '';
+  const duracion = movie.runtime ? `${movie.runtime} min` : '';
+  const generos  = movie.genres ? movie.genres.slice(0,3).map(g=>g.name).join(' · ') : '';
+  const sinopsis = movie.overview || movie.synopsis || '';
+  const posterSrc = movie.poster || (movie.poster_path ? IMG + movie.poster_path : '');
+
+  mTitle.textContent = titulo;
+
+  // Poster
+  if (posterSrc) {
+    mPoster.src = posterSrc;
+    mPoster.style.display = 'block';
+  }
+
+  // Chips
+  const chipsData = [
+    anno      && { texto: `📅 ${anno}`,    cls: '' },
+    rating    && { texto: `⭐ ${rating}`,   cls: 'gold' },
+    duracion  && { texto: `⏱ ${duracion}`, cls: '' },
+    tipo === 'drive' && { texto: `💾 Drive`, cls: 'hl' },
+    tipo === 'stream' && { texto: `▶ Streaming`, cls: 'hl' },
+    movie.calidad && { texto: movie.calidad, cls: '' },
+    movie.tamano  && { texto: `💾 ${movie.tamano}`, cls: '' },
+  ].filter(Boolean);
+  mChips.innerHTML = chipsData.map(c => `<span class="chip ${c.cls}">${c.texto}</span>`).join('');
+
+  // Sinopsis
+  if (sinopsis) {
+    mSynopsis.textContent = sinopsis.length > 220 ? sinopsis.slice(0, 220) + '…' : sinopsis;
+  }
+
+  // Tabs de reproductores
+  buildTabs(movie, tipo);
+}
+
+/* ── Cerrar modal ── */
+function cerrarModal() {
+  modalBackEl.classList.remove('open');
+  setTimeout(() => { playerIframe.src = ''; }, 300);
+  document.body.style.overflow = '';
+  currentMovie = null;
+}
+
+btnAtras.addEventListener('click', cerrarModal);
+modalBackEl.addEventListener('click', e => { if(e.target === modalBackEl) cerrarModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') cerrarModal(); });
+
+/* ── Cargar tendencias de TMDB ── */
+async function cargarTendencias() {
+  const data = await tmdb('/trending/movie/week');
+  trendingGrid.innerHTML = '';
+  if (!data || !data.results) return;
+  navPill.textContent = `🎬 Streaming + Drive`;
+  data.results.slice(0, 18).forEach((movie, i) => {
+    trendingGrid.appendChild(crearCard(movie, i, 'stream'));
+  });
+}
+
+/* ── Cargar películas Drive ── */
+function cargarDrive() {
+  driveGrid.innerHTML = '';
+  driveBadge.textContent = `${DRIVE_MOVIES.length} películas`;
+  DRIVE_MOVIES.forEach((peli, i) => {
+    driveGrid.appendChild(crearCard(peli, i, 'drive'));
+  });
+  driveGrid.appendChild(driveEmpty);
+}
+
+/* ── Búsqueda TMDB ── */
+async function buscar(q) {
+  if (!q.trim()) {
+    searchSection.style.display = 'none';
+    return;
+  }
+
+  searchSection.style.display = 'block';
+  searchGrid.innerHTML = `
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+    <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div></div></div>
+  `;
+  searchCount.textContent = 'Buscando...';
+  searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const data = await tmdb(`/search/movie?query=${encodeURIComponent(q)}`);
+  searchGrid.innerHTML = '';
+  searchGrid.appendChild(searchEmpty);
+
+  if (!data || !data.results || data.results.length === 0) {
+    searchEmpty.classList.add('show');
+    searchCount.textContent = '0 resultados';
+    return;
+  }
+
+  searchEmpty.classList.remove('show');
+  const resultados = data.results.slice(0, 20);
+  searchCount.textContent = `${resultados.length} resultados`;
+  resultados.forEach((movie, i) => {
+    searchGrid.insertBefore(crearCard(movie, i, 'stream'), searchEmpty);
+  });
+}
+
+/* ── Debounce para el buscador ── */
+function onSearch(val) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => buscar(val), 500);
+}
+
+heroSearch.addEventListener('input', e => {
+  navSearch.value = e.target.value;
+  onSearch(e.target.value);
 });
+navSearch.addEventListener('input', e => {
+  heroSearch.value = e.target.value;
+  onSearch(e.target.value);
+});
+
+/* ── Arrancar ── */
+cargarTendencias();
+cargarDrive();
 
 </script>
 </body>

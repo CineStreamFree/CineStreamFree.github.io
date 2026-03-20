@@ -311,7 +311,7 @@ function switchTab(n) {
 async function callGemini(prompt) {
   const key = getKey();
   if (!key) throw new Error('Guarda tu API Key de Gemini primero.');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

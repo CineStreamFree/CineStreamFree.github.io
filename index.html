@@ -3,581 +3,433 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Script Extractor — ElevenLabs Ready</title>
+<title>Script Studio — ElevenLabs Ready</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0a0f;
-    --surface: #111118;
     --card: #16161f;
     --border: #2a2a3a;
     --accent: #ff5f1f;
     --accent2: #ff9a00;
+    --blue: #4f8aff;
+    --blue2: #a78bfa;
     --text: #e8e8f0;
     --muted: #6b6b88;
     --success: #00e5a0;
     --glow: rgba(255,95,31,0.15);
+    --glow-blue: rgba(79,138,255,0.15);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Syne', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
   }
-
-  /* Grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 999;
-    opacity: 0.5;
-  }
-
-  /* Background grid */
   body::after {
     content: '';
-    position: fixed;
-    inset: 0;
-    background-image: 
-      linear-gradient(rgba(255,95,31,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,95,31,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,95,31,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,95,31,0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none; z-index: 0;
   }
+  .wrapper { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 44px 24px 90px; }
 
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+  /* HEADER */
+  header { display: flex; align-items: center; gap: 18px; margin-bottom: 36px; animation: fadeUp .5s ease both; }
+  .logo { width: 54px; height: 54px; background: linear-gradient(135deg,var(--accent),var(--accent2)); border-radius: 16px; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 0 32px var(--glow); flex-shrink:0; }
+  .htext h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .htext h1 span { background: linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .htext p { font-family:'Space Mono',monospace; font-size:12px; color:var(--muted); margin-top:5px; }
 
-  /* Header */
-  header {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 52px;
-    animation: fadeUp 0.6s ease both;
+  /* API KEY */
+  .key-block { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:28px; animation:fadeUp .5s .05s ease both; }
+  .key-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .key-title { font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--muted); }
+  .dot.on { background:var(--success); animation:pulse 2s infinite; }
+  .key-link { font-family:'Space Mono',monospace; font-size:11px; color:#4ade80; text-decoration:none; opacity:.8; }
+  .key-link:hover { opacity:1; }
+  .key-row { display:flex; gap:10px; }
+  .key-input {
+    flex:1; background:rgba(0,0,0,.35); border:1px solid var(--border); border-radius:10px;
+    color:var(--text); font-family:'Space Mono',monospace; font-size:12px; padding:11px 16px;
+    outline:none; letter-spacing:1px; transition:border-color .2s, box-shadow .2s;
   }
+  .key-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow); }
+  .key-input::placeholder { color:var(--muted); letter-spacing:0; }
+  .key-save {
+    padding:11px 20px; background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.25);
+    border-radius:10px; color:#4ade80; font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+    cursor:pointer; transition:all .2s; white-space:nowrap;
+  }
+  .key-save:hover { background:rgba(74,222,128,.18); }
+  .key-save.ok { background:rgba(0,229,160,.15); color:var(--success); }
+  .key-hint { margin-top:9px; font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
 
-  .logo-icon {
-    width: 52px;
-    height: 52px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 0 30px var(--glow);
-    font-size: 22px;
+  /* TABS */
+  .tabs { display:flex; gap:0; margin-bottom:28px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:5px; animation:fadeUp .5s .1s ease both; }
+  .tab {
+    flex:1; padding:13px 10px; text-align:center; font-size:14px; font-weight:700;
+    border-radius:10px; cursor:pointer; transition:all .22s; color:var(--muted); user-select:none;
+    display:flex; align-items:center; justify-content:center; gap:8px;
   }
+  .tab.active-tab1 { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; box-shadow:0 4px 18px var(--glow); }
+  .tab.active-tab2 { background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff; box-shadow:0 4px 18px var(--glow-blue); }
+  .tab:not(.active-tab1):not(.active-tab2):hover { color:var(--text); background:rgba(255,255,255,.05); }
 
-  .header-text h1 {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    line-height: 1.1;
-  }
+  /* PANELS */
+  .panel { display:none; animation:fadeUp .4s ease both; }
+  .panel.active { display:block; }
 
-  .header-text h1 span {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .sec-label {
+    font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:8px;
   }
-
-  .header-text p {
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 14px;
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* Badge */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.2);
-    color: var(--success);
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-top: 10px;
-  }
-
-  .badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--success);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  /* Sections */
-  .section-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* Input area */
-  .input-block {
-    animation: fadeUp 0.6s 0.1s ease both;
-  }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
   textarea {
-    width: 100%;
-    min-height: 200px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    line-height: 1.7;
-    padding: 20px;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    width:100%; background:var(--card); border:1px solid var(--border); border-radius:14px;
+    color:var(--text); font-family:'Space Mono',monospace; font-size:13px; line-height:1.75;
+    padding:18px; resize:vertical; outline:none; transition:border-color .2s, box-shadow .2s;
+  }
+  textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow); }
+  textarea.blue:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--glow-blue); }
+  textarea::placeholder { color:var(--muted); font-size:12px; }
+
+  .btn {
+    margin-top:14px; width:100%; padding:17px; border:none; border-radius:13px; color:#fff;
+    font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer;
+    transition:transform .15s, box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .btn:hover:not(:disabled) { transform:translateY(-2px); }
+  .btn:disabled { opacity:.6; cursor:not-allowed; }
+  .btn-orange { background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:0 4px 26px rgba(255,95,31,.3); }
+  .btn-orange:hover:not(:disabled) { box-shadow:0 8px 36px rgba(255,95,31,.45); }
+  .btn-purple { background:linear-gradient(135deg,var(--blue),var(--blue2)); box-shadow:0 4px 26px rgba(79,138,255,.3); }
+  .btn-purple:hover:not(:disabled) { box-shadow:0 8px 36px rgba(79,138,255,.45); }
+
+  .spinner { width:17px; height:17px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:none; }
+
+  .err {
+    margin-top:11px; padding:13px 16px;
+    background:rgba(255,60,60,.08); border:1px solid rgba(255,60,60,.2);
+    border-radius:10px; color:#ff6b6b; font-family:'Space Mono',monospace; font-size:12px; line-height:1.6; display:none;
   }
 
-  textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--glow);
-  }
-
-  textarea::placeholder {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  /* Button */
-  .btn-extract {
-    margin-top: 16px;
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 30px rgba(255,95,31,0.3);
-  }
-
-  .btn-extract:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 40px rgba(255,95,31,0.45);
-  }
-
-  .btn-extract:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  .btn-extract:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-extract .btn-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  /* Loader */
-  .spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 36px 0 28px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-  }
-
-  /* Output */
-  .output-block {
-    animation: fadeUp 0.5s ease both;
-    display: none;
-  }
-
-  .output-block.visible { display: block; }
-
-  .output-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .output-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--success));
-  }
-
-  .output-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
-  }
-
-  .output-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--success);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .output-title svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .char-count {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    background: rgba(255,255,255,0.05);
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-
-  #outputText {
-    width: 100%;
-    min-height: 200px;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    line-height: 1.8;
-    padding: 20px;
-    resize: vertical;
-    outline: none;
-  }
-
+  /* OUTPUT — single */
+  .out-block { display:none; margin-top:28px; }
+  .out-block.show { display:block; animation:fadeUp .4s ease both; }
+  .out-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; }
+  .out-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--accent2),var(--success)); }
+  .out-head { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); background:rgba(255,255,255,.02); }
+  .out-title { font-size:13px; font-weight:600; color:var(--success); }
+  .chars { font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); background:rgba(255,255,255,.05); padding:3px 10px; border-radius:20px; }
+  .out-ta { width:100%; min-height:180px; background:transparent; border:none; color:var(--text); font-family:'Space Mono',monospace; font-size:13px; line-height:1.8; padding:18px; resize:vertical; outline:none; }
   .copy-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: calc(100% - 32px);
-    margin: 0 16px 16px;
-    padding: 14px;
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.25);
-    border-radius: 12px;
-    color: var(--success);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:calc(100% - 28px); margin:0 14px 14px; padding:13px;
+    background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.22);
+    border-radius:11px; color:var(--success);
+    font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s;
   }
+  .copy-btn:hover { background:rgba(0,229,160,.14); border-color:rgba(0,229,160,.45); transform:translateY(-1px); }
+  .copy-btn.done { background:rgba(0,229,160,.2); border-color:var(--success); }
 
-  .copy-btn:hover {
-    background: rgba(0,229,160,0.14);
-    border-color: rgba(0,229,160,0.5);
-    transform: translateY(-1px);
+  /* OUTPUT — bible (two columns) */
+  .bible-out { display:none; margin-top:28px; }
+  .bible-out.show { display:grid; grid-template-columns:1fr 1fr; gap:16px; animation:fadeUp .4s ease both; }
+  .b-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; }
+  .b-card.script-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--blue),var(--blue2)); }
+  .b-card.prompt-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#f59e0b,#ec4899); }
+  .b-head { display:flex; align-items:center; justify-content:space-between; padding:13px 17px; border-bottom:1px solid var(--border); background:rgba(255,255,255,.02); }
+  .b-title { font-size:12px; font-weight:700; display:flex; align-items:center; gap:7px; }
+  .b-title.sc { color:#818cf8; }
+  .b-title.pr { color:#f59e0b; }
+  .b-ta { width:100%; min-height:260px; background:transparent; border:none; color:var(--text); font-family:'Space Mono',monospace; font-size:12px; line-height:1.8; padding:16px; resize:vertical; outline:none; }
+  .b-copy {
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    width:calc(100% - 24px); margin:0 12px 12px; padding:11px;
+    border-radius:10px; font-family:'Syne',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s;
   }
+  .b-copy.sc-copy { background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.25); color:#818cf8; }
+  .b-copy.sc-copy:hover { background:rgba(129,140,248,.16); }
+  .b-copy.pr-copy { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.25); color:#f59e0b; }
+  .b-copy.pr-copy:hover { background:rgba(245,158,11,.16); }
+  .b-copy.done { opacity:.7; }
 
-  .copy-btn.copied {
-    background: rgba(0,229,160,0.2);
-    border-color: var(--success);
-  }
+  /* FOOTER TIPS */
+  .tips { margin-top:44px; display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
+  .tip { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:15px; }
+  .tip-i { font-size:18px; margin-bottom:7px; }
+  .tip-t { font-size:11px; font-weight:700; margin-bottom:3px; }
+  .tip-d { font-size:10px; color:var(--muted); font-family:'Space Mono',monospace; line-height:1.5; }
 
-  /* Tips */
-  .tips {
-    margin-top: 40px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    animation: fadeUp 0.6s 0.3s ease both;
-  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  .tip-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-  }
-
-  .tip-icon {
-    font-size: 20px;
-    margin-bottom: 8px;
-  }
-
-  .tip-title {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .tip-text {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    line-height: 1.5;
-  }
-
-  /* Error */
-  .error-msg {
-    margin-top: 12px;
-    padding: 14px 16px;
-    background: rgba(255,60,60,0.08);
-    border: 1px solid rgba(255,60,60,0.2);
-    border-radius: 10px;
-    color: #ff6b6b;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    display: none;
-  }
-
-  /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  @media (max-width: 600px) {
-    .tips { grid-template-columns: 1fr; }
-    header { flex-direction: column; }
-    .header-text h1 { font-size: 22px; }
+  @media(max-width:680px){
+    .bible-out.show{grid-template-columns:1fr;}
+    .tips{grid-template-columns:1fr 1fr;}
+    header{flex-direction:column;}
   }
 </style>
 </head>
 <body>
 <div class="wrapper">
 
+  <!-- HEADER -->
   <header>
-    <div class="logo-icon">🎙️</div>
-    <div class="header-text">
-      <h1>Script <span>Extractor</span></h1>
-      <p>// powered by Claude AI — listo para ElevenLabs</p>
-      <div class="badge">ElevenLabs Ready</div>
+    <div class="logo">🎙️</div>
+    <div class="htext">
+      <h1>Script <span>Studio</span></h1>
+      <p>// Gemini AI gratis — ElevenLabs Ready</p>
     </div>
   </header>
 
-  <div class="input-block">
-    <div class="section-label">01 — Pega tu texto aquí</div>
-    <textarea id="inputText" placeholder="Pega aquí tu contenido: puede ser un artículo, email, guión borrador, conversación, documento... La IA extraerá y limpiará el guión listo para narrar en ElevenLabs."></textarea>
+  <!-- API KEY -->
+  <div class="key-block">
+    <div class="key-top">
+      <div class="key-title"><div class="dot" id="keyDot"></div>🔑 Google Gemini API Key — <span style="color:var(--success);font-size:12px;">100% GRATIS</span></div>
+      <a class="key-link" href="https://aistudio.google.com/app/apikey" target="_blank">→ Obtener gratis en aistudio.google.com</a>
+    </div>
+    <div class="key-row">
+      <input class="key-input" type="password" id="apiKey" placeholder="AIza..." autocomplete="off" spellcheck="false"/>
+      <button class="key-save" id="saveBtn" onclick="saveKey()">Guardar</button>
+    </div>
+    <div class="key-hint">🔒 Se guarda en tu navegador (localStorage). Gratis: 15 peticiones/min · 1M tokens/día. Sin tarjeta de crédito.</div>
+  </div>
 
-    <button class="btn-extract" id="extractBtn" onclick="extractScript()">
-      <div class="btn-inner">
-        <div class="spinner" id="spinner"></div>
-        <span id="btnText">✦ Extraer Guión con IA</span>
-      </div>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active-tab1" id="tab1" onclick="switchTab(1)">✂️ Extraer Guión de Texto</div>
+    <div class="tab" id="tab2" onclick="switchTab(2)">✝️ Guión Bíblico + Prompt</div>
+  </div>
+
+  <!-- PANEL 1: EXTRACT -->
+  <div class="panel active" id="panel1">
+    <div class="sec-label">01 — Pega tu texto aquí</div>
+    <textarea id="inputText" rows="9" placeholder="Pega aquí cualquier contenido: artículo, email, borrador, conversación, notas...
+La IA limpiará todo y entregará solo el guión listo para narrar en ElevenLabs."></textarea>
+    <button class="btn btn-orange" id="btn1" onclick="extractScript()">
+      <div class="spinner" id="sp1"></div>
+      <span id="bt1">✦ Extraer Guión con IA</span>
     </button>
+    <div class="err" id="err1"></div>
 
-    <div class="error-msg" id="errorMsg"></div>
-  </div>
-
-  <div class="divider">resultado</div>
-
-  <div class="output-block" id="outputBlock">
-    <div class="section-label">02 — Guión listo para ElevenLabs</div>
-    <div class="output-card">
-      <div class="output-header">
-        <div class="output-title">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Guión Extraído
+    <div class="out-block" id="out1">
+      <div class="sec-label">02 — Guión listo</div>
+      <div class="out-card">
+        <div class="out-head">
+          <div class="out-title">✅ Guión Extraído</div>
+          <span class="chars" id="ch1">0 caracteres</span>
         </div>
-        <span class="char-count" id="charCount">0 caracteres</span>
+        <textarea class="out-ta" id="outText1" readonly></textarea>
+        <button class="copy-btn" id="cp1" onclick="copyText('outText1','cp1')">📋 Copiar — listo para ElevenLabs</button>
       </div>
-      <textarea id="outputText" readonly></textarea>
-      <button class="copy-btn" id="copyBtn" onclick="copyScript()">
-        📋 Copiar todo — listo para pegar en ElevenLabs
-      </button>
     </div>
   </div>
 
+  <!-- PANEL 2: BIBLE -->
+  <div class="panel" id="panel2">
+    <div class="sec-label">01 — Escribe la historia bíblica</div>
+    <textarea class="blue" id="bibleInput" rows="5" placeholder="Ejemplo: La historia de David y Goliat
+O: El nacimiento de Jesús
+O: Jonás y la ballena
+O: El hijo pródigo..."></textarea>
+    <button class="btn btn-purple" id="btn2" onclick="genBible()">
+      <div class="spinner" id="sp2"></div>
+      <span id="bt2">✝️ Generar Guión + Prompt con IA</span>
+    </button>
+    <div class="err" id="err2"></div>
+
+    <div class="bible-out" id="bibleOut">
+      <div class="b-card script-card">
+        <div class="b-head">
+          <div class="b-title sc">🎙️ Guión 1 minuto — ElevenLabs</div>
+          <span class="chars" id="ch2">0 car.</span>
+        </div>
+        <textarea class="b-ta" id="bibleScript" readonly></textarea>
+        <button class="b-copy sc-copy" id="bcp1" onclick="copyText('bibleScript','bcp1')">📋 Copiar guión</button>
+      </div>
+      <div class="b-card prompt-card">
+        <div class="b-head">
+          <div class="b-title pr">🎨 Prompt para imagen / video</div>
+          <span class="chars" id="ch3">0 car.</span>
+        </div>
+        <textarea class="b-ta" id="biblePrompt" readonly></textarea>
+        <button class="b-copy pr-copy" id="bcp2" onclick="copyText('biblePrompt','bcp2')">📋 Copiar prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
   <div class="tips">
-    <div class="tip-card">
-      <div class="tip-icon">📄</div>
-      <div class="tip-title">Cualquier formato</div>
-      <div class="tip-text">Artículos, emails, borradores, notas. La IA limpia todo.</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">✂️</div>
-      <div class="tip-title">Limpieza automática</div>
-      <div class="tip-text">Elimina links, emojis, metadatos. Solo el texto narrable.</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🎧</div>
-      <div class="tip-title">Optimizado para voz</div>
-      <div class="tip-text">Puntuación y flujo ideal para síntesis de voz en ElevenLabs.</div>
-    </div>
+    <div class="tip"><div class="tip-i">🆓</div><div class="tip-t">100% Gratis</div><div class="tip-d">Gemini Flash. Sin tarjeta. 1M tokens/día.</div></div>
+    <div class="tip"><div class="tip-i">✂️</div><div class="tip-t">Limpieza total</div><div class="tip-d">Elimina links, emojis, markdown. Solo texto narrable.</div></div>
+    <div class="tip"><div class="tip-i">✝️</div><div class="tip-t">Bíblico listo</div><div class="tip-d">Guión de 1 min + prompt para imagen/video al instante.</div></div>
+    <div class="tip"><div class="tip-i">🎧</div><div class="tip-t">ElevenLabs Ready</div><div class="tip-d">Puntuación optimizada para síntesis de voz.</div></div>
   </div>
 
 </div>
-
 <script>
-async function extractScript() {
-  const input = document.getElementById('inputText').value.trim();
-  if (!input) {
-    showError('Por favor pega algún texto primero.');
-    return;
-  }
+// ─── Init ───────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const k = localStorage.getItem('gemini_key');
+  if (k) { document.getElementById('apiKey').value = k; dot(true); }
+});
 
-  const btn = document.getElementById('extractBtn');
-  const spinner = document.getElementById('spinner');
-  const btnText = document.getElementById('btnText');
-  const errorMsg = document.getElementById('errorMsg');
-
-  btn.disabled = true;
-  spinner.style.display = 'block';
-  btnText.textContent = 'Procesando...';
-  errorMsg.style.display = 'none';
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: `Eres un experto en preparar guiones para síntesis de voz en ElevenLabs.
-
-Tu única tarea: extraer y limpiar el guión narrable del texto que te den.
-
-Reglas estrictas:
-- Devuelve SOLO el texto limpio para narrar, sin comentarios tuyos ni explicaciones
-- Elimina: URLs, links, hashtags, menciones (@), emojis, corchetes, asteriscos, caracteres especiales raros
-- Elimina: metadatos, encabezados técnicos, notas del editor, marcas de formato tipo markdown
-- Conserva: la narrativa completa, el contenido real, los diálogos, las ideas principales
-- Mejora la puntuación si es necesario para que suene natural al leerlo en voz alta
-- Usa punto y coma o comas donde ayude al ritmo de la voz
-- No agregues nada nuevo que no esté en el texto original
-- No resumas ni recortes el contenido — mantén todo el texto narrable
-- Empieza directamente con el guión, sin decir "Aquí está el guión:" ni nada similar`,
-        messages: [{ role: "user", content: `Extrae y limpia el guión de este texto:\n\n${input}` }]
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || `Error ${response.status}`);
-    }
-
-    const data = await response.json();
-    const script = data.content.map(b => b.text || '').join('').trim();
-
-    document.getElementById('outputText').value = script;
-    document.getElementById('charCount').textContent = `${script.length.toLocaleString()} caracteres`;
-    document.getElementById('outputBlock').classList.add('visible');
-    document.getElementById('outputBlock').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  } catch (err) {
-    showError('Error al procesar: ' + err.message);
-  } finally {
-    btn.disabled = false;
-    spinner.style.display = 'none';
-    btnText.textContent = '✦ Extraer Guión con IA';
-  }
+function saveKey() {
+  const k = document.getElementById('apiKey').value.trim();
+  if (!k) { showErr('err1','Escribe tu API Key primero.'); return; }
+  localStorage.setItem('gemini_key', k);
+  dot(true);
+  const b = document.getElementById('saveBtn');
+  b.textContent = '✅ Guardada'; b.classList.add('ok');
+  setTimeout(() => { b.textContent = 'Guardar'; b.classList.remove('ok'); }, 2000);
 }
 
-function copyScript() {
-  const text = document.getElementById('outputText').value;
-  if (!text) return;
+function dot(on) { document.getElementById('keyDot').classList.toggle('on', on); }
 
+function getKey() { return localStorage.getItem('gemini_key') || document.getElementById('apiKey').value.trim(); }
+
+// ─── Tabs ────────────────────────────────────────────
+let currentTab = 1;
+function switchTab(n) {
+  currentTab = n;
+  document.getElementById('panel1').classList.toggle('active', n===1);
+  document.getElementById('panel2').classList.toggle('active', n===2);
+  document.getElementById('tab1').className = 'tab' + (n===1 ? ' active-tab1' : '');
+  document.getElementById('tab2').className = 'tab' + (n===2 ? ' active-tab2' : '');
+}
+
+// ─── Gemini call ─────────────────────────────────────
+async function callGemini(prompt) {
+  const key = getKey();
+  if (!key) throw new Error('Guarda tu API Key de Gemini primero.');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  if (!res.ok) {
+    const e = await res.json();
+    const msg = e.error?.message || `Error ${res.status}`;
+    if (res.status === 400 && msg.includes('API_KEY')) throw new Error('API Key inválida. Verifica en aistudio.google.com');
+    if (res.status === 429) throw new Error('Límite alcanzado. Espera un minuto e intenta de nuevo.');
+    throw new Error(msg);
+  }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ─── Tab 1: Extract ──────────────────────────────────
+async function extractScript() {
+  const input = document.getElementById('inputText').value.trim();
+  if (!input) { showErr('err1','Pega algún texto primero.'); return; }
+  startLoad('btn1','sp1','bt1','Procesando...');
+  hideErr('err1');
+  try {
+    const result = await callGemini(
+      `Eres un experto en preparar guiones para síntesis de voz en ElevenLabs.
+Tu tarea: extraer y limpiar el guión narrable del siguiente texto.
+
+REGLAS ESTRICTAS:
+- Devuelve SOLO el texto limpio para narrar, sin comentarios ni explicaciones tuyas
+- Elimina: URLs, links, hashtags, menciones (@), emojis, asteriscos, markdown, metadatos, encabezados técnicos
+- Conserva: la narrativa completa, diálogos, ideas principales
+- Mejora la puntuación para que suene natural en voz alta
+- No agregues nada nuevo, no resumas, mantén todo el texto narrable
+- Empieza directamente con el guión, sin preámbulo ni conclusión
+
+TEXTO:
+${input}`
+    );
+    document.getElementById('outText1').value = result.trim();
+    document.getElementById('ch1').textContent = result.trim().length.toLocaleString() + ' caracteres';
+    document.getElementById('out1').classList.add('show');
+    document.getElementById('out1').scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch(e) { showErr('err1', e.message); }
+  finally { endLoad('btn1','sp1','bt1','✦ Extraer Guión con IA'); }
+}
+
+// ─── Tab 2: Bible ────────────────────────────────────
+async function genBible() {
+  const topic = document.getElementById('bibleInput').value.trim();
+  if (!topic) { showErr('err2','Escribe una historia bíblica primero.'); return; }
+  startLoad('btn2','sp2','bt2','Generando...');
+  hideErr('err2');
+  try {
+    const result = await callGemini(
+      `Eres un experto en contenido cristiano para redes sociales y YouTube.
+
+El usuario quiere crear un video corto de 1 minuto sobre esta historia bíblica: "${topic}"
+
+Debes devolver exactamente este formato y nada más:
+
+===GUION===
+[Escribe aquí un guión narrado de exactamente 1 minuto (aprox. 130-150 palabras) para leer en ElevenLabs. Lenguaje claro, emotivo, inspirador. Sin indicaciones de escena, solo el texto narrativo limpio. Empieza directo con la narración.]
+
+===PROMPT===
+[Escribe aquí un prompt en inglés para generar imágenes o video con IA (Midjourney, DALL-E, Sora, Runway). Debe describir la escena principal de la historia: iluminación, estilo visual, ambiente, personajes, época. Detallado, cinematográfico, épico. Máximo 120 palabras.]
+
+No escribas nada fuera de esas dos secciones.`
+    );
+
+    const scriptMatch = result.match(/===GUION===\s*([\s\S]*?)(?:===PROMPT===|$)/);
+    const promptMatch = result.match(/===PROMPT===\s*([\s\S]*?)$/);
+
+    const script = scriptMatch ? scriptMatch[1].trim() : result.trim();
+    const prompt = promptMatch ? promptMatch[1].trim() : '';
+
+    document.getElementById('bibleScript').value = script;
+    document.getElementById('biblePrompt').value = prompt;
+    document.getElementById('ch2').textContent = script.length.toLocaleString() + ' car.';
+    document.getElementById('ch3').textContent = prompt.length.toLocaleString() + ' car.';
+    document.getElementById('bibleOut').classList.add('show');
+    document.getElementById('bibleOut').scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch(e) { showErr('err2', e.message); }
+  finally { endLoad('btn2','sp2','bt2','✝️ Generar Guión + Prompt con IA'); }
+}
+
+// ─── Helpers ─────────────────────────────────────────
+function startLoad(btnId, spId, txtId, msg) {
+  document.getElementById(btnId).disabled = true;
+  document.getElementById(spId).style.display = 'block';
+  document.getElementById(txtId).textContent = msg;
+}
+function endLoad(btnId, spId, txtId, original) {
+  document.getElementById(btnId).disabled = false;
+  document.getElementById(spId).style.display = 'none';
+  document.getElementById(txtId).textContent = original;
+}
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = '⚠ ' + msg; el.style.display = 'block';
+}
+function hideErr(id) { document.getElementById(id).style.display = 'none'; }
+
+function copyText(taId, btnId) {
+  const text = document.getElementById(taId).value;
+  if (!text) return;
   navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.classList.add('copied');
-    btn.textContent = '✅ ¡Copiado! Pega en ElevenLabs';
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.textContent = '📋 Copiar todo — listo para pegar en ElevenLabs';
-    }, 2500);
+    const btn = document.getElementById(btnId);
+    const orig = btn.textContent;
+    btn.classList.add('done'); btn.textContent = '✅ ¡Copiado!';
+    setTimeout(() => { btn.classList.remove('done'); btn.textContent = orig; }, 2200);
   });
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.textContent = '⚠ ' + msg;
-  el.style.display = 'block';
-}
-
-// Allow Ctrl+Enter to trigger extraction
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') extractScript();
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter') {
+    if (currentTab===1) extractScript();
+    else genBible();
+  }
 });
 </script>
 </body>
